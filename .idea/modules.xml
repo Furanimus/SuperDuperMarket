@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SuperDuperMarket.iml" filepath="$PROJECT_DIR$/SuperDuperMarket.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ConsoleUI/ConsoleUI.iml" filepath="$PROJECT_DIR$/ConsoleUI/ConsoleUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sdmSystem/sdmSystem.iml" filepath="$PROJECT_DIR$/sdmSystem/sdmSystem.iml" />
     </modules>
   </component>
 </project>
