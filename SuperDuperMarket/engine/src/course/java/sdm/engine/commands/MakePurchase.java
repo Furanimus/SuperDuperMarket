@@ -1,4 +1,6 @@
-package com.sdm.ui.commands;
+package course.java.sdm.engine.commands;
+
+import course.java.sdm.engine.SystemManagerSingleton;
 
 public class MakePurchase implements ICommand {
 
@@ -8,6 +10,6 @@ public class MakePurchase implements ICommand {
     }
 
     @Override
-    public void execute() {
+    public void execute(SystemManagerSingleton systemManager) {
     }
 }

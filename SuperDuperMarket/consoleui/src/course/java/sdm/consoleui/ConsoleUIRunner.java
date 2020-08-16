@@ -1,30 +1,33 @@
-package com.sdm.ui;
+package course.java.sdm.consoleui;
 
-import com.sdm.ui.commands.*;
+import course.java.sdm.engine.SystemManagerSingleton;
+import course.java.sdm.engine.commands.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class ConsoleUIRunner {
-
-    static List<ICommand> menuCommands = new ArrayList<>();
+    public static List<ICommand> menuCommands = new ArrayList<>();
+    public static SystemManagerSingleton systemManager;
 
     public static void main(String[] args) {
+        systemManager = SystemManagerSingleton.getInstance();
+
+        initICommandList();
         while (true) {
             Scanner scanner = new Scanner(System.in);
             printMenu();
+            //validate Input TODO
             int choice = Integer.parseInt(scanner.nextLine());
-            menuCommands.get(choice - 1).execute();
+            menuCommands.get(choice - 1).execute(systemManager);
         }
     }
 
     private static void printMenu() {
         System.out.println("Please choose your option (press the digit and then enter)");
-        for (int i = 0; i < menuCommands.size() ; i++) {
-            System.out.println(String.format("%d) %s", i+1, menuCommands.get(i).getDescription()));
+        for (int i = 0; i < menuCommands.size(); i++) {
+            System.out.println(String.format("%d) %s", i + 1, menuCommands.get(i).getDescription()));
         }
     }
 

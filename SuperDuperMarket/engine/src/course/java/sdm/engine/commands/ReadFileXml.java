@@ -1,4 +1,6 @@
-package com.sdm.ui.commands;
+package course.java.sdm.engine.commands;
+
+import course.java.sdm.engine.SystemManagerSingleton;
 
 public class ReadFileXml implements ICommand{
 
@@ -8,7 +10,7 @@ public class ReadFileXml implements ICommand{
     }
 
     @Override
-    public void execute() {
-        //TODO read and load from XML
+    public void execute(SystemManagerSingleton systemManager) {
+
     }
 }
