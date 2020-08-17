@@ -10,6 +10,7 @@ public class MakePurchase implements ICommand {
     }
 
     @Override
-    public void execute(SystemManagerSingleton systemManager) {
+    public String execute(SystemManagerSingleton systemManager) {
+        return "";
     }
 }

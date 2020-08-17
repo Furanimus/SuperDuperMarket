@@ -9,7 +9,8 @@ public class ShowProductsInfo implements ICommand {
     }
 
     @Override
-    public void execute(SystemManagerSingleton systemManager) {
+    public String execute(SystemManagerSingleton systemManager) {
         systemManager.viewAvailableProducts();
+        return "Not impelemented yet";
     }
 }

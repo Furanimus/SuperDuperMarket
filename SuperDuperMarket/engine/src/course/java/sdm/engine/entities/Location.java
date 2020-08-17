@@ -1,4 +1,4 @@
-package course.java.sdm.engine.players;
+package course.java.sdm.engine.entities;
 
 import java.awt.*;
 
@@ -9,10 +9,22 @@ public class Location extends Point {
         super(x, y);
     }
 
+    //Pythagoras
     public double measureDistance(Location other) {
         return Math.sqrt(
                 (Math.pow(Math.abs(this.x - other.x),2))
                 + (Math.pow(Math.abs(this.y - other.y),2)));
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
+
 

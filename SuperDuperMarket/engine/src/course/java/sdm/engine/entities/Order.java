@@ -1,4 +1,4 @@
-package course.java.sdm.engine.players;
+package course.java.sdm.engine.entities;
 
 import java.util.ArrayList;
 import java.util.List;

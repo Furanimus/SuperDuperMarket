@@ -1,4 +1,4 @@
-package course.java.sdm.engine.players;
+package course.java.sdm.engine.entities;
 
 public class Customer {
     private int id;

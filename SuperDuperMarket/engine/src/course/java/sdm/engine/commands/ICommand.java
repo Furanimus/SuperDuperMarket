@@ -7,5 +7,5 @@ import course.java.sdm.engine.SystemManagerSingleton;
 public interface ICommand {
     String getDescription();
 
-    void execute(SystemManagerSingleton systemManager);
+    String execute(SystemManagerSingleton systemManager);
 }

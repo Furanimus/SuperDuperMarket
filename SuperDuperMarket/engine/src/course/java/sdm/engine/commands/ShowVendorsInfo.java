@@ -10,7 +10,8 @@ public class ShowVendorsInfo implements ICommand {
     }
 
     @Override
-    public void execute(SystemManagerSingleton systemManager) {
+    public String execute(SystemManagerSingleton systemManager) {
         //TODO iterate over all objects and print to console
+        return "Not Implemented yet";
     }
 }
