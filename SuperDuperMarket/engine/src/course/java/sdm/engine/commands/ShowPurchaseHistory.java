@@ -9,7 +9,7 @@ public class ShowPurchaseHistory implements ICommand {
     }
 
     @Override
-    public String execute(SystemManagerSingleton systemManager) {
+    public Object execute(SystemManagerSingleton systemManager) {
         System.out.println("In ShowPurchaseHistory");
         return "Not Implemented yet";
     }

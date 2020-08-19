@@ -36,8 +36,9 @@ public class SystemManagerSingleton {
 
     private void justAnExample() {
         vendorManager.addVendor( new Vendor(1,"Bashari Store", 1.2, new Location(5,7)));
-        vendorManager.addVendor( new Vendor(800000,"Fisher Store", 1.2, new Location(5,7)));
+        vendorManager.addVendor( new Vendor(800000,"Fisher Store", 1.2, new Location (5,7)));
         vendorManager.addVendor( new Vendor(800000,"Babits Store", 1.2, new Location(4,21)));
+        vendorManager.addVendor( new Vendor(43,"Kronen Store", 1.2, new Location(542,21))); //Not good because of values
     }
 
     public static synchronized SystemManagerSingleton getInstance() {

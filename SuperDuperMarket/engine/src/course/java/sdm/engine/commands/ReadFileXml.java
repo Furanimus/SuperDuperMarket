@@ -1,17 +1,19 @@
 package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.SystemManagerSingleton;
+import course.java.sdm.engine.xml.FileValidator;
 
 public class ReadFileXml implements ICommand{
     private String msg = "";
-    //private String path = "";
+    FileValidator fileValidator = new FileValidator();
+
     @Override
     public String getDescription() {
         return "Load a file to the system from XML";
     }
 
     @Override
-    public String execute(SystemManagerSingleton systemManager) {
+    public Object execute(SystemManagerSingleton systemManager) {
         String path = systemManager.getFilePath();
         try {
             if (validateFile(path)) {
@@ -29,16 +31,9 @@ public class ReadFileXml implements ICommand{
     }
 
     private boolean validateFile(String path) {
-        return (validateExistence() && validateAppWise());
+        return (fileValidator.validateExistence() && fileValidator.validateAppWise());
     }
-    //TODO
-    private boolean validateAppWise() {
-        return true;
-    }
-    //TODO
-    private boolean validateExistence() {
-        return true;
-    }
+
     //TODO
     private void readFromXml(String filePath) {
     }

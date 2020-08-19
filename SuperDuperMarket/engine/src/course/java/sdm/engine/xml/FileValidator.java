@@ -1,4 +1,7 @@
 package course.java.sdm.engine.xml;
+
+import course.java.sdm.engine.SystemManagerSingleton;
+
 /*
 3.1.	הקובץ אכן קיים, והוא מסוג XML (די לבדוק לשם כך כי הוא נגמר בסיומת xml)
 3.2.	בתוך קבוצת המוצרים, אין 2 מוצרים בעלי id זהה
@@ -9,5 +12,18 @@ package course.java.sdm.engine.xml;
 3.7.	מיקומי החנויות לא חורגים מרשת הקורדינטות של 50 ; 50 (x,y: [1,50])
  */
 public class FileValidator {
+    private String filePath;
 
+    public FileValidator() {
+        this.filePath = SystemManagerSingleton.getInstance().getFilePath();
+    }
+
+
+    public boolean validateAppWise() {
+        return true;
+    }
+
+    public boolean validateExistence() {
+        return true;
+    }
 }

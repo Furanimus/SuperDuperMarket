@@ -9,6 +9,10 @@ public class Location extends Point {
         super(x, y);
     }
 
+    public boolean validateLocationBounds(int x, int y) {
+        return (x <= 50 && x >= 1) && (y <= 50 && y >= 1);
+    }
+
     //Pythagoras
     public double measureDistance(Location other) {
         return Math.sqrt(
