@@ -41,7 +41,6 @@ import javax.xml.bind.annotation.XmlType;
 })
 @XmlRootElement(name = "super-duper-market-descriptor")
 public class SuperDuperMarketDescriptor {
-
     @XmlElement(name = "SDM-items", required = true)
     protected SDMItems sdmItems;
     @XmlElement(name = "SDM-stores", required = true)

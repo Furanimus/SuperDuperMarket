@@ -10,7 +10,7 @@ public class ExitSystem implements ICommand {
     }
 
     @Override
-    public String execute(SystemManagerSingleton systemManager) {
+    public Object execute(SystemManagerSingleton systemManager) {
         return "Thanks for using my Super Duper Market \n" +
                 "Goodbye";
     }

@@ -8,7 +8,7 @@ public class SystemManagerSingleton {
     private boolean isFileLoaded = false;
 
     private static SystemManagerSingleton instance = null;
-    private VendorManager vendorManager = new VendorManager();
+    private final VendorManager vendorManager = new VendorManager();
     private Map<Integer,Product> idToProduct = new HashMap<>();
     //private List<Vendor> vendorList;
 
@@ -24,21 +24,26 @@ public class SystemManagerSingleton {
         return filePath;
     }
 
+    public VendorManager getVendorManager() {
+        return vendorManager;
+    }
+
     public void setFilePath(String path) {
         filePath = path;
     }
 
     private SystemManagerSingleton() {
-        //vendorList = new ArrayList<>();
-        //idToProduct = new HashMap<>();
         justAnExample();
+
     }
 
     private void justAnExample() {
         vendorManager.addVendor( new Vendor(1,"Bashari Store", 1.2, new Location(5,7)));
-        vendorManager.addVendor( new Vendor(800000,"Fisher Store", 1.2, new Location (5,7)));
         vendorManager.addVendor( new Vendor(800000,"Babits Store", 1.2, new Location(4,21)));
-        vendorManager.addVendor( new Vendor(43,"Kronen Store", 1.2, new Location(542,21))); //Not good because of values
+
+        //*************** Bad inputs **************
+        //vendorManager.addVendor( new Vendor(800000,"Fisher Store", 1.2, new Location (5,7)));
+        //vendorManager.addVendor( new Vendor(43,"Kronen Store", 1.2, new Location(542,21))); //Not good because of values
     }
 
     public static synchronized SystemManagerSingleton getInstance() {

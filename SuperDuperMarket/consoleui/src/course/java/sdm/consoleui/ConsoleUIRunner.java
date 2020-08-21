@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class ConsoleUIRunner {
     public static List<ICommand> menuCommands = new ArrayList<>();
-    public static SystemManagerSingleton systemManager;
+    public final static SystemManagerSingleton systemManager = SystemManagerSingleton.getInstance();;
     public static boolean isRunning = true;
     private static final Scanner SCANNER = new Scanner(System.in);
 
@@ -24,7 +24,6 @@ public class ConsoleUIRunner {
     }
 
     private static void initComponents() {
-        systemManager = SystemManagerSingleton.getInstance();
         initICommandList();
     }
 

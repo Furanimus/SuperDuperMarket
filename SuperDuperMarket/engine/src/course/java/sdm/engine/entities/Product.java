@@ -1,6 +1,6 @@
 package course.java.sdm.engine.entities;
 
-public class Product {//implements ICountable, IWeightable{
+public class Product {
     protected int id;
     protected String name;
     protected boolean isWeightable; //TODO

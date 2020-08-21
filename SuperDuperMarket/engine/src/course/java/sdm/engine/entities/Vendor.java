@@ -7,6 +7,16 @@ public class Vendor {
     private double PPK;
     private Location location;
     private Map<Integer, Double> idToPrice;
+    //private Map<Integer, DedicatedObject - product in a store> idToObject;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public Map<Integer, Double> getIdToPrice() {
+        return idToPrice;
+    }
 
     public Vendor() {
     }

@@ -1,12 +1,24 @@
 package course.java.sdm.engine.entities;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import java.awt.*;
+import java.util.Objects;
 
-public class Location extends Point {
+public class Location {
+    private final int x;
+    private final int y;
 
-    //if ((x <= 50 && x >= 1) && (y <= 50 && y >= 1)) { TODO
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     public Location(int x, int y) {
-        super(x, y);
+        this.x = x;
+        this.y = y;
     }
 
     public boolean validateLocationBounds(int x, int y) {
@@ -21,13 +33,17 @@ public class Location extends Point {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return x == location.x &&
+                y == location.y;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(x, y);
     }
 }
 
