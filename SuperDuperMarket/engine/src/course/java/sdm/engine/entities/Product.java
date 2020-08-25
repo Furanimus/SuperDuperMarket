@@ -19,6 +19,18 @@ public class Product {
         return name;
     }
 
+    @Override
+    public String toString() {
+        String result = "Product name: " + name + " | id: " + id +
+                " | Purchase category: " ;
+        if(this.isWeightable) {
+            result += "Weight";
+        } else{
+            result += "Quantity";
+        }
+        return  result+"\n";
+    }
+
     public boolean isWeightable() {
         return isWeightable;
     }

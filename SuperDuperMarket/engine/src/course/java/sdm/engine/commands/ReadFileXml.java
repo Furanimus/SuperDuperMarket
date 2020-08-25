@@ -2,10 +2,15 @@ package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.SystemManagerSingleton;
 import course.java.sdm.engine.xml.FileValidator;
+import course.java.sdm.engine.xml.JAXBObjectsToMyObjects;
+
+import javax.xml.bind.JAXBException;
+import java.io.FileNotFoundException;
 
 public class ReadFileXml implements ICommand{
     private String msg = "";
     FileValidator fileValidator = new FileValidator();
+    JAXBObjectsToMyObjects reader = new JAXBObjectsToMyObjects();
 
     @Override
     public String getDescription() {
@@ -17,7 +22,7 @@ public class ReadFileXml implements ICommand{
         String path = systemManager.getFilePath();
         try {
             if (validateFile(path)) {
-                readFromXml(path);
+                copyFromXml(path);
                 msg = "File was loaded successfully";
                 if(systemManager.getIsFileLoaded()) {
                     systemManager.fileLoaded();
@@ -35,6 +40,7 @@ public class ReadFileXml implements ICommand{
     }
 
     //TODO
-    private void readFromXml(String filePath) {
+    private void copyFromXml(String filePath) throws FileNotFoundException, JAXBException {
+        reader.jaxbObjectToMyObject();
     }
 }
