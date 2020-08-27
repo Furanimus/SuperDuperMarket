@@ -1,17 +1,35 @@
 package course.java.sdm.engine;
 
 import course.java.sdm.engine.entities.*;
+
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class SystemManagerSingleton {
+    private final DecimalFormat D2F = new DecimalFormat("#.##");
+    public final String SEPARATOR = " | ";
+
+    public String formatNumer(double num) {
+        return D2F.format(num);
+    }
+
+    /*
+        private static DecimalFormat df2 = new DecimalFormat("#.##");
+
+    public static void main(String[] args) {
+
+        double input = 3.14159265359;
+        System.out.println("double : " + input);
+        System.out.println("double : " + df2.format(input));    //3.14
+     */
     private final int NUM_OF_COLS = 6;
     private String filePath;
+
     private boolean isFileLoaded = false;
 
     private static SystemManagerSingleton instance = null;
     private final VendorManager vendorManager;
     private final Map<Integer,Product> idToProduct;
-    //private final String[][] productsTableInfo = new String[NUM_OF_COLS][];
     //private List<Vendor> vendorList;
 
     public boolean getIsFileLoaded() {
@@ -68,18 +86,24 @@ public class SystemManagerSingleton {
         return idToProduct;
     }
 
-    public ArrayList<String> getAllAvailableProducts() {
+    public ArrayList<String> getProductsDescriptionAndStatistics() {
         List<String> result = new ArrayList<String>();
-        //String toAppend;
-
-        //for (int i = 1; i < productsTableInfo.length ; i++) {
-
-        //}
+        StringBuilder sb = new StringBuilder();
 
         for (Product product : idToProduct.values()) {
-            result.add(product.toString());
+            sb.append(product.toString());
+            sb.append(SEPARATOR);
+            sb.append("Stores that sell the item: ");
+            sb.append(vendorManager.howManyVendorsSellItem(product.getId()));
+            sb.append(SEPARATOR);
+            sb.append("Average price: ");
+            sb.append(D2F.format(vendorManager.avarageProductPrice(product.getId())));
+            //sb.append(separator);
+            //sb.append(""); //TODO count how many times the item was sold.
+            sb.append("\n");
+            result.add(sb.toString());
+            sb.delete(0, sb.length()); //clears sb
         }
-        System.out.println("product BLABLA");
         return (ArrayList<String>) result;
     }
 }

@@ -7,27 +7,32 @@ import course.java.sdm.engine.xml.JAXBObjectsToMyObjects;
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 
-public class ReadFileXml implements ICommand{
+public class ReadFileXml implements MenuItem {
     private String msg = "";
     FileValidator fileValidator = new FileValidator();
     JAXBObjectsToMyObjects reader = new JAXBObjectsToMyObjects();
 
     @Override
-    public String getDescription() {
+    public String showMe() {
         return "Load a file to the system from XML";
     }
 
     @Override
-    public Object execute(SystemManagerSingleton systemManager) {
+    public Object activate(SystemManagerSingleton systemManager) {
         String path = systemManager.getFilePath();
         try {
             if (validateFile(path)) {
                 copyFromXml(path);
                 msg = "File was loaded successfully";
-                if(systemManager.getIsFileLoaded()) {
+                if(!systemManager.getIsFileLoaded()) {
                     systemManager.fileLoaded();
                 }
             }
+        }
+        catch(FileNotFoundException ex) {
+            msg = "File was not found. Please enter a valid path to file. ";
+        } catch(JAXBException ex) {
+            msg = "JAXB Exception:" + ex.getMessage();
         }
         catch(Exception ex) {
             msg = "Unknown exception occurred:" + ex.getMessage();

@@ -2,14 +2,14 @@ package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.SystemManagerSingleton;
 
-public class ShowProductsInfo implements ICommand {
+public class ShowProductsInfo implements MenuItem {
     @Override
-    public String getDescription() {
+    public String showMe() {
         return "View all available products";
     }
 
     @Override
-    public Object execute(SystemManagerSingleton systemManager) {
-        return systemManager.getAllAvailableProducts();
+    public Object activate(SystemManagerSingleton systemManager) {
+        return systemManager.getProductsDescriptionAndStatistics();
     }
 }

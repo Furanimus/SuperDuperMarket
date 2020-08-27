@@ -4,8 +4,8 @@ import course.java.sdm.engine.SystemManagerSingleton;
 
 //TODO change execute to return a String and move it to System module
 
-public interface ICommand {
-    String getDescription();
+public interface MenuItem {
+    String showMe();
 
-    Object execute(SystemManagerSingleton systemManager);
+    Object activate(SystemManagerSingleton systemManager);
 }

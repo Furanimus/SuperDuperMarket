@@ -5,9 +5,7 @@ import java.util.List;
 public interface Menu {
     void showMe();
 
-    //List<IMenu> getS
-
-    void readUserChoiceAndValidate();
+    boolean readUserChoiceAndValidate();
 
     void activateChoice();
 }

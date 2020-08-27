@@ -6,6 +6,7 @@ import course.java.sdm.engine.entities.Location;
 import course.java.sdm.engine.entities.Product;
 import course.java.sdm.engine.entities.Vendor;
 import course.java.sdm.engine.xml.jaxbobjects.SDMItem;
+import course.java.sdm.engine.xml.jaxbobjects.SDMSell;
 import course.java.sdm.engine.xml.jaxbobjects.SDMStore;
 import course.java.sdm.engine.xml.jaxbobjects.SuperDuperMarketDescriptor;
 
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,12 +53,14 @@ public class JAXBObjectsToMyObjects {
 
     private void copyStores(Map<Integer, Vendor> vendorsMap, List<SDMStore> storeList) {
         for(SDMStore store : storeList) {
-            Location newLocation = new Location(store.getLocation().getX(),
-                    store.getLocation().getY());
-            vendorsMap.put(store.getId(), new Vendor(store.getId(),
-                    store.getName(),
-                    store.getDeliveryPpk(),
-                    newLocation));
+            Location newLocation = new Location(store.getLocation().getX(), store.getLocation().getY());
+            vendorsMap.put(store.getId(),
+                    new Vendor(store.getId(), store.getName(),
+                    store.getDeliveryPpk(), newLocation));
+            Map<Integer, Integer> prices = vendorsMap.get(store.getId()).getIdToPrice();
+            for(SDMSell sdmSell : store.getSDMPrices().getSDMSell()) {
+                prices.put(sdmSell.getItemId(), sdmSell.getPrice());
+            }
         }
     }
 

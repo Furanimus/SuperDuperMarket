@@ -2,14 +2,14 @@ package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.SystemManagerSingleton;
 
-public class ShowPurchaseHistory implements ICommand {
+public class ShowPurchaseHistory implements MenuItem {
     @Override
-    public String getDescription() {
+    public String showMe() {
         return "View Purchase history so far";
     }
 
     @Override
-    public Object execute(SystemManagerSingleton systemManager) {
+    public Object activate(SystemManagerSingleton systemManager) {
         System.out.println("In ShowPurchaseHistory");
         return "Not Implemented yet";
     }

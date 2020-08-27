@@ -28,7 +28,7 @@ public class Product {
         } else{
             result += "Quantity";
         }
-        return  result+"\n";
+        return  result;
     }
 
     public boolean isWeightable() {

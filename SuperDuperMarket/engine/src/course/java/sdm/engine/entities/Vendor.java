@@ -6,7 +6,7 @@ public class Vendor {
     private String name;
     private double PPK;
     private Location location;
-    private Map<Integer, Double> idToPrice;
+    private Map<Integer, Integer> idToPrice;
     //private Map<Integer, DedicatedObject - product in a store> idToObject;
 
 
@@ -14,15 +14,22 @@ public class Vendor {
         return id;
     }
 
-    public Map<Integer, Double> getIdToPrice() {
+    public Map<Integer, Integer> getIdToPrice() {
         return idToPrice;
     }
 
     public Vendor() {
     }
 
-    public void addProduct(Integer id, double price) {
+    public void addProduct(Integer id, int price) {
         idToPrice.put(id, price);
+    }
+
+    @Override
+    public String toString() {
+        return "Store ID: " + id +
+               " | Name: " + name +
+               " | PPK: " + PPK ;
     }
 
     public Vendor (int id, String name, double PPK, Location location) {

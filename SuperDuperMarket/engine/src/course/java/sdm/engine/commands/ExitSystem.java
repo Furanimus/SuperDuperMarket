@@ -3,14 +3,14 @@ package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.SystemManagerSingleton;
 
-public class ExitSystem implements ICommand {
+public class ExitSystem implements MenuItem {
     @Override
-    public String getDescription() {
+    public String showMe() {
         return "Exit System";
     }
 
     @Override
-    public Object execute(SystemManagerSingleton systemManager) {
+    public Object activate(SystemManagerSingleton systemManager) {
         return "Thanks for using my Super Duper Market \n" +
                 "Goodbye";
     }
