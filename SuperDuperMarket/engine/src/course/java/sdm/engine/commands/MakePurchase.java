@@ -2,7 +2,18 @@ package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.SystemManagerSingleton;
 
+import java.util.List;
+
 public class MakePurchase implements MenuItem {
+    private String lastPath = "";
+    List<MenuItem> storesMenu;
+
+    public MakePurchase() {
+        initStoresMenu();
+    }
+
+    private void initStoresMenu() {
+    }
 
     @Override
     public String showMe() {
@@ -11,6 +22,8 @@ public class MakePurchase implements MenuItem {
 
     @Override
     public Object activate(SystemManagerSingleton systemManager) {
+
+
         return "";
     }
 }

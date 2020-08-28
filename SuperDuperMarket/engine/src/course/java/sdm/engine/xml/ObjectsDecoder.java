@@ -19,28 +19,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JAXBObjectsToMyObjects {
+public class ObjectsDecoder {
 
     public final String WEIGHT_CATEGORY = "Weight";
 
     private final String JAXB_XML_PACKAGE_NAME = "course.java.sdm.engine.xml.jaxbobjects";
     private  String xmlPath;
     private  SystemManagerSingleton systemManagerInstance;
+    private  VendorManager vendorManager;
 
-    public JAXBObjectsToMyObjects() {
+    public ObjectsDecoder() {
         this.systemManagerInstance = SystemManagerSingleton.getInstance();
+        vendorManager = systemManagerInstance.getVendorManager();
     }
 
     public void jaxbObjectToMyObject() throws FileNotFoundException, JAXBException {
         xmlPath = systemManagerInstance.getFilePath();
-        //xmlPath = "C:\\git\\SuperDuperMarket\\SuperDuperMarket\\ex1-big.xml";
         InputStream inputStream = new FileInputStream(new File(xmlPath));
-
         try {
             SuperDuperMarketDescriptor sdmDescriptor = deserializeFrom(inputStream);
             copyFromJAXB(systemManagerInstance, sdmDescriptor);
         } catch (Exception e) {
-            System.out.println("failed to deserialize SDMDescriptor");
+            System.out.println("failed to deserialize SDMDescriptor"); //TODO fix to be more flexible
         }
     }
 
@@ -48,15 +48,14 @@ public class JAXBObjectsToMyObjects {
         List<SDMItem> readItems = descriptor.getSDMItems().getSDMItem();
         List<SDMStore> readStores = descriptor.getSDMStores().getSDMStore();
         copyItems(systemManagerInstance.getProductsMap(), readItems);
-        copyStores(systemManagerInstance.getVendorManager().getIdToVendor(), readStores);
+        copyStores(vendorManager.getIdToVendor(), readStores);
     }
 
     private void copyStores(Map<Integer, Vendor> vendorsMap, List<SDMStore> storeList) {
         for(SDMStore store : storeList) {
             Location newLocation = new Location(store.getLocation().getX(), store.getLocation().getY());
-            vendorsMap.put(store.getId(),
-                    new Vendor(store.getId(), store.getName(),
-                    store.getDeliveryPpk(), newLocation));
+            Vendor toAdd = new Vendor(store.getId(), store.getName(), store.getDeliveryPpk(), newLocation);
+            vendorManager.addVendor(toAdd);
             Map<Integer, Integer> prices = vendorsMap.get(store.getId()).getIdToPrice();
             for(SDMSell sdmSell : store.getSDMPrices().getSDMSell()) {
                 prices.put(sdmSell.getItemId(), sdmSell.getPrice());
@@ -68,7 +67,7 @@ public class JAXBObjectsToMyObjects {
         for(SDMItem item : itemList) {
             productsMap.put(item.getId(), new Product(item.getId(),
                     item.getName(),
-                    item.getPurchaseCategory().equals(WEIGHT_CATEGORY)));
+                    item.getPurchaseCategory()));
         }
     }
 
@@ -81,7 +80,6 @@ public class JAXBObjectsToMyObjects {
     //Use streams somehow
     public boolean validateXmlInformation() {
         boolean isValid = true;
-
 
         return isValid;
     }

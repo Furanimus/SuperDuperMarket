@@ -3,12 +3,12 @@ package course.java.sdm.engine.entities;
 public class Product {
     protected int id;
     protected String name;
-    protected boolean isWeightable; //TODO
+    protected String purchaseCategory;
 
-    public Product(int id, String name, boolean isWeightable) {
+    public Product(int id, String name, String isWeightable) {
         this.id = id;
         this.name = name;
-        this.isWeightable = isWeightable;
+        this.purchaseCategory = isWeightable;
     }
 
     public int getId() {
@@ -21,17 +21,13 @@ public class Product {
 
     @Override
     public String toString() {
-        String result = "Product name: " + name + " | id: " + id +
-                " | Purchase category: " ;
-        if(this.isWeightable) {
-            result += "Weight";
-        } else{
-            result += "Quantity";
-        }
+        String result = "Product name: " + name +
+                        " | id: " + id +
+                        " | Purchase category: " + purchaseCategory;
         return  result;
     }
 
-    public boolean isWeightable() {
-        return isWeightable;
+    public String getPurchaseCategory() {
+        return purchaseCategory;
     }
 }

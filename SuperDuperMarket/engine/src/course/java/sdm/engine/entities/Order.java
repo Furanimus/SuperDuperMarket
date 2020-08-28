@@ -7,6 +7,8 @@ public class Order {
     //private Customer orderingCustomer;
     List<Product> orderedProducts;
 
+
+
     public Order() {
         orderedProducts = new ArrayList<>();
     }

@@ -2,7 +2,7 @@ package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.SystemManagerSingleton;
 import course.java.sdm.engine.xml.FileValidator;
-import course.java.sdm.engine.xml.JAXBObjectsToMyObjects;
+import course.java.sdm.engine.xml.ObjectsDecoder;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 public class ReadFileXml implements MenuItem {
     private String msg = "";
     FileValidator fileValidator = new FileValidator();
-    JAXBObjectsToMyObjects reader = new JAXBObjectsToMyObjects();
+    ObjectsDecoder reader = new ObjectsDecoder();
 
     @Override
     public String showMe() {

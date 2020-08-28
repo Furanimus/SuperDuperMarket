@@ -6,10 +6,10 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class SystemManagerSingleton {
+
     private final DecimalFormat D2F = new DecimalFormat("#.##");
     public final String SEPARATOR = " | ";
-
-    public String formatNumer(double num) {
+    public String formatNumber(double num) {
         return D2F.format(num);
     }
 
@@ -66,15 +66,6 @@ public class SystemManagerSingleton {
         */
     }
 
-    public void justAnExample() {
-        //vendorManager.addVendor(new Vendor(1,"Bashari Store", 1.2, new Location(5,7)));
-        //vendorManager.addVendor(new Vendor(800000,"Babits Store", 1.2, new Location(4,21)));
-
-        //*************** Bad inputs **************
-        //vendorManager.addVendor(new Vendor(800000,"Fisher Store", 1.2, new Location (5,7)));
-        //vendorManager.addVendor( new Vendor(43,"Kronen Store", 1.2, new Location(542,21))); //Not good because of values
-    }
-
     public static synchronized SystemManagerSingleton getInstance() {
         if (instance == null) {
             instance = new SystemManagerSingleton();
@@ -86,24 +77,18 @@ public class SystemManagerSingleton {
         return idToProduct;
     }
 
-    public ArrayList<String> getProductsDescriptionAndStatistics() {
-        List<String> result = new ArrayList<String>();
-        StringBuilder sb = new StringBuilder();
-
+    public ArrayList<Map<String, Object>> getProductsDescriptionAndStatistics() {
+        ArrayList<Map<String, Object>> result = new ArrayList<>();
         for (Product product : idToProduct.values()) {
-            sb.append(product.toString());
-            sb.append(SEPARATOR);
-            sb.append("Stores that sell the item: ");
-            sb.append(vendorManager.howManyVendorsSellItem(product.getId()));
-            sb.append(SEPARATOR);
-            sb.append("Average price: ");
-            sb.append(D2F.format(vendorManager.avarageProductPrice(product.getId())));
-            //sb.append(separator);
-            //sb.append(""); //TODO count how many times the item was sold.
-            sb.append("\n");
-            result.add(sb.toString());
-            sb.delete(0, sb.length()); //clears sb
+            Map<String, Object> productInfo = new TreeMap<>();
+            productInfo.put("Id",product.getId());
+            productInfo.put("Name",product.getName());
+            productInfo.put("Purchase Category",product.getPurchaseCategory());
+            productInfo.put("Number Of Stores that Sell the product",vendorManager.howManyVendorsSellItem(product.getId()));
+            productInfo.put("Product Average Price",vendorManager.averageProductPrice(product.getId()));
+            //TODO add count how many times the item was sold.
+            result.add(productInfo);
         }
-        return (ArrayList<String>) result;
+        return result;
     }
 }

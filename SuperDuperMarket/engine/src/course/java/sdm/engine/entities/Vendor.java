@@ -4,11 +4,10 @@ import java.util.*;
 public class Vendor {
     private int id;
     private String name;
-    private double PPK;
+    private int PPK;
     private Location location;
     private Map<Integer, Integer> idToPrice;
     //private Map<Integer, DedicatedObject - product in a store> idToObject;
-
 
     public int getId() {
         return id;
@@ -32,7 +31,7 @@ public class Vendor {
                " | PPK: " + PPK ;
     }
 
-    public Vendor (int id, String name, double PPK, Location location) {
+    public Vendor (int id, String name, int PPK, Location location) {
         this.id = id;
         this.name = name;
         this.PPK = PPK;
@@ -44,7 +43,7 @@ public class Vendor {
         return name;
     }
 
-    public double getPPK() {
+    public int getPPK() {
         return PPK;
     }
 

@@ -8,10 +8,10 @@ import course.java.sdm.engine.exceptions.LocationAlreadyRegisteredException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-    //TODO Singleton
+//TODO Singleton
     public class VendorManager {
 
         private final String SEPARATOR = " | ";
@@ -28,10 +28,12 @@ import java.util.Map;
         }
 
         public void addVendor(Vendor toAdd) {
+            int x = toAdd.getLocation().getX();
+            int y =toAdd.getLocation().getY();
             if(isLocationExist(toAdd.getLocation())) {
-                throw new LocationAlreadyRegisteredException("Location already exists");
+                throw new LocationAlreadyRegisteredException(String.format("Vendor already exists this location: (%d,%d)", x, y));
             } else {
-                locationsMatrix.addLocation(toAdd.getLocation().getX(), toAdd.getLocation().getY());
+                locationsMatrix.addLocation(x, y);
                 idToVendor.put(toAdd.getId(), toAdd);
             }
         }
@@ -43,7 +45,7 @@ import java.util.Map;
             return sb.toString();
         }
 
-        public double avarageProductPrice(int id) {
+        public double averageProductPrice(int id) {
             double sum = 0;
             int numOfStoresThatSellTheItem = howManyVendorsSellItem(id);
             for (Vendor vendor : idToVendor.values()) {
@@ -51,7 +53,7 @@ import java.util.Map;
                     sum+= vendor.getIdToPrice().get(id);
                 }
             }
-            return sum/numOfStoresThatSellTheItem;
+            return sum / numOfStoresThatSellTheItem;
         }
 
         public int howManyVendorsSellItem(int productId) {
@@ -65,28 +67,44 @@ import java.util.Map;
         }
 
         //TODO
-        public ArrayList<String> getProductStatisticsAgainstVendors() {
-            List<String> result = new ArrayList<String>();
-            StringBuilder sb = new StringBuilder();
-
+        public  ArrayList<Map<String, Object>> getVendorsInfo() {
+            ArrayList<Map<String, Object>> result = new ArrayList<>();
             for (Vendor vendor : idToVendor.values()) {
-                sb.append(vendor.toString());
-                sb.append(SEPARATOR);
-                sb.append("The store sells the following products: \n");
-                sb.append(getStoreProductsInformationString(vendor));
+                Map<String, Object> vendorInfo = new TreeMap<>();
+                vendorInfo.put("Id",vendor.getId());
+                vendorInfo.put("Name",vendor.getName());
+                vendorInfo.put("Store products", getVendorProducts(vendor));
+                //vendorInfo.put("Past Orders",TODO);
+                vendorInfo.put("PPK",vendor.getPPK());
+                //vendorInfo.put("summed PPK",TODO);
 
-                //sb.append(separator);
-                //sb.append(""); //TODO count how many times the item was sold.
-                sb.append("\n");
-                result.add(sb.toString());
-                sb.delete(0, sb.length()); //clears sb
+                //TODO add count how many times the item was sold.
+                result.add(vendorInfo);
             }
-
-
-            return (ArrayList<String>) result;
+            return result;
         }
 
-        private String getStoreProductsInformationString(Vendor vendor) {
+        public  Map<Integer, Object> getVendorProducts(Vendor vendor) {
+            Map<Integer, Object> products = new TreeMap<>();
+            Map<Integer, Product> allProducts = SystemManagerSingleton.getInstance().getProductsMap();
+            Map<Integer, Integer> prices = vendor.getIdToPrice();
+
+            for (int productId : prices.keySet()) {
+                Product product = allProducts.get(productId);
+                Map<String, Object> currentProduct = new TreeMap<>();
+                currentProduct.put("Id", product.getId());
+                currentProduct.put("Name",product.getName());
+                currentProduct.put("Purchase Category", product.getPurchaseCategory());
+                currentProduct.put("Price", prices.get(productId));
+                //TODO currentProduct.put("Time Sold", PLACE_HOLDER);
+                products.put(productId, currentProduct);
+            }
+            return products;
+
+            /*
+            for(Integer productId : vendor.getIdToPrice().values()) {
+
+            }
             StringBuilder sb = new StringBuilder();
             Map<Integer, Product> idToProduct = SystemManagerSingleton.getInstance().getProductsMap();
             Map<Integer, Integer> idToPrice = vendor.getIdToPrice();
@@ -100,5 +118,7 @@ import java.util.Map;
             }
 
             return sb.toString();
+
+             */
         }
     }
