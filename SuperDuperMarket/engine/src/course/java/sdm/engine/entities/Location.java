@@ -1,5 +1,8 @@
 package course.java.sdm.engine.entities;
 
+import course.java.sdm.engine.SystemManagerSingleton;
+import course.java.sdm.engine.exceptions.LocationOutOfBoundsException;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import java.awt.*;
 import java.util.Objects;
@@ -17,8 +20,12 @@ public class Location {
     }
 
     public Location(int x, int y) {
-        this.x = x;
-        this.y = y;
+        if (validateLocationBounds(x, y)) {
+            this.x = x;
+            this.y = y;
+        } else {
+            throw new LocationOutOfBoundsException("Location is not within range [1,50]");
+        }
     }
 
     public boolean validateLocationBounds(int x, int y) {

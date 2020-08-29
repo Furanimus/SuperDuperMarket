@@ -8,7 +8,6 @@ import java.util.*;
 public class SystemManagerSingleton {
 
     private final DecimalFormat D2F = new DecimalFormat("#.##");
-    public final String SEPARATOR = " | ";
     public String formatNumber(double num) {
         return D2F.format(num);
     }
@@ -30,7 +29,7 @@ public class SystemManagerSingleton {
     private static SystemManagerSingleton instance = null;
     private final VendorManager vendorManager;
     private final Map<Integer,Product> idToProduct;
-    //private List<Vendor> vendorList;
+    private final Map<Integer, Order> allOrders;
 
     public boolean getIsFileLoaded() {
         return isFileLoaded;
@@ -53,8 +52,9 @@ public class SystemManagerSingleton {
     }
 
     private SystemManagerSingleton() {
-        vendorManager = new VendorManager();
+        vendorManager = VendorManager.getInstance();
         idToProduct = new HashMap<>();
+        allOrders = new TreeMap<>();
 
         /*
         //TODO remove

@@ -6,6 +6,7 @@ import course.java.sdm.engine.xml.ObjectsDecoder;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class ReadFileXml implements MenuItem {
     private String msg = "";
@@ -28,13 +29,14 @@ public class ReadFileXml implements MenuItem {
                     systemManager.fileLoaded();
                 }
             }
-        }
-        catch(FileNotFoundException ex) {
+        } catch(FileNotFoundException ex) {
             msg = "File was not found. Please enter a valid path to file. ";
-        } catch(JAXBException ex) {
-            msg = "JAXB Exception:" + ex.getMessage();
+        } catch (IOException e) {
+            msg = "IO exception:" + e.getMessage();
         }
-        catch(Exception ex) {
+        catch(JAXBException ex) {
+            msg = "JAXB Exception:" + ex.getMessage();
+        } catch(Exception ex) {
             msg = "Unknown exception occurred:" + ex.getMessage();
         }
         return msg;
@@ -45,7 +47,7 @@ public class ReadFileXml implements MenuItem {
     }
 
     //TODO
-    private void copyFromXml(String filePath) throws FileNotFoundException, JAXBException {
+    private void copyFromXml(String filePath) throws IOException, JAXBException {
         reader.jaxbObjectToMyObject();
     }
 }

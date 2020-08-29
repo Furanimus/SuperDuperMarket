@@ -11,10 +11,7 @@ import course.java.sdm.engine.xml.jaxbobjects.SDMStore;
 import course.java.sdm.engine.xml.jaxbobjects.SuperDuperMarketDescriptor;
 
 import javax.xml.bind.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +27,12 @@ public class ObjectsDecoder {
 
     public ObjectsDecoder() {
         this.systemManagerInstance = SystemManagerSingleton.getInstance();
-        vendorManager = systemManagerInstance.getVendorManager();
+        vendorManager = VendorManager.getInstance();
     }
 
-    public void jaxbObjectToMyObject() throws FileNotFoundException, JAXBException {
+    public void jaxbObjectToMyObject() throws IOException, JAXBException {
         xmlPath = systemManagerInstance.getFilePath();
-        InputStream inputStream = new FileInputStream(new File(xmlPath));
-        try {
+        try (InputStream inputStream = new FileInputStream(new File(xmlPath))) {
             SuperDuperMarketDescriptor sdmDescriptor = deserializeFrom(inputStream);
             copyFromJAXB(systemManagerInstance, sdmDescriptor);
         } catch (Exception e) {

@@ -13,17 +13,26 @@ import java.util.TreeMap;
 
 //TODO Singleton
     public class VendorManager {
-
-        private final String SEPARATOR = " | ";
-        //private List<Location> vendorLocations = new ArrayList<>();
-        private Map<Integer, Vendor> idToVendor = new HashMap<>();
-        private LocationsMatrix locationsMatrix = new LocationsMatrix();
-
+        private Map<Integer, Vendor> idToVendor;
+        private LocationsMatrix locationsMatrix;
+        private static VendorManager instance = null;
         public Map<Integer, Vendor> getIdToVendor() {
             return idToVendor;
         }
 
-        private boolean isLocationExist(Location toInsert) {
+    private VendorManager() {
+        idToVendor = new HashMap<>();
+        locationsMatrix = new LocationsMatrix();
+    }
+
+    public static synchronized VendorManager getInstance() {
+            if (instance == null) {
+                instance = new VendorManager();
+            }
+            return instance;
+        }
+
+        public boolean isLocationExist(Location toInsert) {
             return locationsMatrix.getLocation(toInsert.getX(), toInsert.getY());
         }
 
@@ -67,13 +76,13 @@ import java.util.TreeMap;
         }
 
         //TODO
-        public  ArrayList<Map<String, Object>> getVendorsInfo() {
+        public ArrayList<Map<String, Object>> getVendorsInfo() {
             ArrayList<Map<String, Object>> result = new ArrayList<>();
             for (Vendor vendor : idToVendor.values()) {
                 Map<String, Object> vendorInfo = new TreeMap<>();
                 vendorInfo.put("Id",vendor.getId());
                 vendorInfo.put("Name",vendor.getName());
-                vendorInfo.put("Store products", getVendorProducts(vendor));
+                vendorInfo.put("Products", getVendorProducts(vendor));
                 //vendorInfo.put("Past Orders",TODO);
                 vendorInfo.put("PPK",vendor.getPPK());
                 //vendorInfo.put("summed PPK",TODO);
