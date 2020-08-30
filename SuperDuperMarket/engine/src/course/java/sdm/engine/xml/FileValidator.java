@@ -1,6 +1,6 @@
 package course.java.sdm.engine.xml;
 
-import course.java.sdm.engine.SystemManagerSingleton;
+import course.java.sdm.engine.managers.SystemManagerSingleton;
 
 /*
 3.1.	הקובץ אכן קיים, והוא מסוג XML (די לבדוק לשם כך כי הוא נגמר בסיומת xml)

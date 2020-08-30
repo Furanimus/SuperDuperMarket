@@ -1,7 +1,7 @@
 package course.java.sdm.engine.xml;
 
-import course.java.sdm.engine.SystemManagerSingleton;
-import course.java.sdm.engine.VendorManager;
+import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.managers.VendorManager;
 import course.java.sdm.engine.entities.Location;
 import course.java.sdm.engine.entities.Product;
 import course.java.sdm.engine.entities.Vendor;
@@ -12,7 +12,6 @@ import course.java.sdm.engine.xml.jaxbobjects.SuperDuperMarketDescriptor;
 
 import javax.xml.bind.*;
 import java.io.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +29,16 @@ public class ObjectsDecoder {
         vendorManager = VendorManager.getInstance();
     }
 
+    //TODO check why second file fails to deserialize
     public void jaxbObjectToMyObject() throws IOException, JAXBException {
         xmlPath = systemManagerInstance.getFilePath();
         try (InputStream inputStream = new FileInputStream(new File(xmlPath))) {
             SuperDuperMarketDescriptor sdmDescriptor = deserializeFrom(inputStream);
             copyFromJAXB(systemManagerInstance, sdmDescriptor);
+        } catch (IOException e) {
+            System.out.println("IOException SDMDescriptor"); //TODO fix to be more flexible
+        } catch (JAXBException e) {
+        System.out.println("JAXBException SDMDescriptor"); //TODO fix to be more flexible
         } catch (Exception e) {
             System.out.println("failed to deserialize SDMDescriptor"); //TODO fix to be more flexible
         }

@@ -1,6 +1,6 @@
 package course.java.sdm.engine.commands;
 
-import course.java.sdm.engine.SystemManagerSingleton;
+import course.java.sdm.engine.managers.SystemManagerSingleton;
 import course.java.sdm.engine.xml.FileValidator;
 import course.java.sdm.engine.xml.ObjectsDecoder;
 

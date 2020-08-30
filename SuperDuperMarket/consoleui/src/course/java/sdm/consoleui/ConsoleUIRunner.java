@@ -1,12 +1,9 @@
 package course.java.sdm.consoleui;
-import course.java.sdm.engine.SystemManagerSingleton;
-import course.java.sdm.engine.entities.Order;
+import course.java.sdm.engine.managers.SystemManagerSingleton;
 
-import java.awt.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ConsoleUIRunner {
     public final static SystemManagerSingleton systemManager = SystemManagerSingleton.getInstance();;

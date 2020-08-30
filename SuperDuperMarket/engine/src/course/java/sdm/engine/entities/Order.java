@@ -1,26 +1,33 @@
 package course.java.sdm.engine.entities;
 
+import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.managers.VendorManager;
+
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 public class Order {
+
     //private Customer orderingCustomer;
     private final int DAYS = 31;
     private final int MONTHS = 12;
     private final int HOURS = 24;
     private final int MINUTES = 60;
     private static final String DATE_FORMAT = "dd/mm-hh:mm";
+    private VendorManager vendorManager = VendorManager.getInstance();
+    private Vendor whereFrom;
 
     private DateFormat df = new SimpleDateFormat(DATE_FORMAT);
     private Date date;
-    private List<Product> orderedProducts;
+    //private List<Product> orderedProducts;
+    private Map<Integer, Double> productIdToAmount = new HashMap<>();
+    ;
     private Location targetLocation;
+
+    public Order(Vendor whereFrom) {
+        this.whereFrom = whereFrom;
+    }
 
     public void setTargetLocation(Location targetLocation) {
         this.targetLocation = targetLocation;
@@ -29,12 +36,15 @@ public class Order {
     private static int orderId = 0;
 
     public Order() {
-        orderedProducts = new ArrayList<>();
         orderId = orderId++;
     }
 
     public static int getOrderId() {
         return orderId;
+    }
+
+    public Vendor getWhereFrom() {
+        return whereFrom;
     }
 
     public boolean dateChecker(String date) throws Exception, NumberFormatException {
@@ -82,8 +92,12 @@ public class Order {
         return result;
     }
 
-    public List<Product> getOrderedProducts() {
-        return orderedProducts;
+//    public List<Product> getOrderedProducts() {
+//        return orderedProducts;
+//    }
+
+    public Map<Integer, Double> getProductIdToAmount() {
+        return productIdToAmount;
     }
 
     public static String getDATE_FORMAT() {
@@ -91,30 +105,37 @@ public class Order {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(DATE_FORMAT, order.DATE_FORMAT) &&
-                orderedProducts.equals(order.orderedProducts) &&
-                Objects.equals(df, order.df);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(DATE_FORMAT, orderedProducts, df);
-    }
-
-    @Override
     public String toString() {
-        return "Order{" +
-                "DATE_FORMAT='" + DATE_FORMAT + '\'' +
-                ", orderedProducts=" + orderedProducts +
-                ", dateFormat=" + df +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        for (int id : productIdToAmount.keySet()) {
+            Product product = SystemManagerSingleton.getInstance().getProduct(id);
+            sb.append("Product Id: ");
+            sb.append(product.getId());
+            sb.append(SystemManagerSingleton.STRING_SEPARATOR);
+            sb.append("Product Name: ");
+            sb.append(product.getName());
+            sb.append(SystemManagerSingleton.STRING_SEPARATOR);
+            sb.append("Purchase category: ");
+            sb.append(product.getPurchaseCategory());
+            sb.append(SystemManagerSingleton.STRING_SEPARATOR);
+            //sb.append("Product Price: ");
+            //sb.append(product.getPrice());
+//          sb.append(SystemManagerSingleton.STRING_SEPARATOR);
+            sb.append(productIdToAmount.get(id));
+
+        }
+        return sb.toString();
     }
 
-    public void addProduct(Product product) {
+    public void addProduct(int productId, double amountToAdd) {
+        if (productIdToAmount.containsKey(productId)){
+            productIdToAmount.put(productId, productIdToAmount.get(productId) + amountToAdd);
+        } else {
+            productIdToAmount.put(productId, amountToAdd);
+        }
+    }
 
+    public double calculateTotalPrice(int productId) {
+        return 0;
     }
 }

@@ -1,4 +1,4 @@
-package course.java.sdm.engine;
+package course.java.sdm.engine.managers;
 
 import course.java.sdm.engine.entities.Location;
 import course.java.sdm.engine.entities.LocationsMatrix;
@@ -23,6 +23,10 @@ import java.util.TreeMap;
     private VendorManager() {
         idToVendor = new HashMap<>();
         locationsMatrix = new LocationsMatrix();
+    }
+
+    public Vendor getVendor(int id) {
+            return idToVendor.getOrDefault(id, null);
     }
 
     public static synchronized VendorManager getInstance() {
@@ -58,8 +62,8 @@ import java.util.TreeMap;
             double sum = 0;
             int numOfStoresThatSellTheItem = howManyVendorsSellItem(id);
             for (Vendor vendor : idToVendor.values()) {
-                if (vendor.getIdToPrice().containsKey(id)) {
-                    sum+= vendor.getIdToPrice().get(id);
+                if (vendor.isSellItem(id)) {
+                    sum+= vendor.getPrice(id);
                 }
             }
             return sum / numOfStoresThatSellTheItem;
@@ -68,7 +72,7 @@ import java.util.TreeMap;
         public int howManyVendorsSellItem(int productId) {
                 int result = 0;
                 for (Vendor vendor : idToVendor.values()) {
-                    if (vendor.getIdToPrice().containsKey(productId)) {
+                    if (vendor.isSellItem(productId)) {
                         result++;
                     }
                 }
@@ -82,7 +86,7 @@ import java.util.TreeMap;
                 Map<String, Object> vendorInfo = new TreeMap<>();
                 vendorInfo.put("Id",vendor.getId());
                 vendorInfo.put("Name",vendor.getName());
-                vendorInfo.put("Products", getVendorProducts(vendor));
+                vendorInfo.put("Products", getVendorProductsInfo(vendor));
                 //vendorInfo.put("Past Orders",TODO);
                 vendorInfo.put("PPK",vendor.getPPK());
                 //vendorInfo.put("summed PPK",TODO);
@@ -93,7 +97,7 @@ import java.util.TreeMap;
             return result;
         }
 
-        public  Map<Integer, Object> getVendorProducts(Vendor vendor) {
+        public  Map<Integer, Object> getVendorProductsInfo(Vendor vendor) {
             Map<Integer, Object> products = new TreeMap<>();
             Map<Integer, Product> allProducts = SystemManagerSingleton.getInstance().getProductsMap();
             Map<Integer, Integer> prices = vendor.getIdToPrice();

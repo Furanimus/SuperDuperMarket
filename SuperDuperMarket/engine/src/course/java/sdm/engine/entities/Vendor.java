@@ -7,7 +7,7 @@ public class Vendor {
     private int PPK;
     private Location location;
     private Map<Integer, Integer> idToPrice;
-    //private Map<Integer, DedicatedObject - product in a store> idToObject;
+    //private Map<Integer, Product> idToProduct;
 
     public int getId() {
         return id;
@@ -15,6 +15,14 @@ public class Vendor {
 
     public Map<Integer, Integer> getIdToPrice() {
         return idToPrice;
+    }
+
+    public boolean isSellItem(int id) {
+        return idToPrice.containsKey(id);
+    }
+
+    public int getPrice(int productId) {
+        return idToPrice.getOrDefault(productId, -1);
     }
 
     public Vendor() {

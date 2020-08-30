@@ -1,7 +1,7 @@
 package course.java.sdm.engine.commands;
 
-import course.java.sdm.engine.SystemManagerSingleton;
-import course.java.sdm.engine.VendorManager;
+import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.managers.VendorManager;
 
 public class ShowVendorsInfo implements MenuItem {
 

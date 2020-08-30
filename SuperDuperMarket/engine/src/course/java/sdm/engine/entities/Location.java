@@ -1,10 +1,7 @@
 package course.java.sdm.engine.entities;
 
-import course.java.sdm.engine.SystemManagerSingleton;
 import course.java.sdm.engine.exceptions.LocationOutOfBoundsException;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import java.awt.*;
 import java.util.Objects;
 
 public class Location {

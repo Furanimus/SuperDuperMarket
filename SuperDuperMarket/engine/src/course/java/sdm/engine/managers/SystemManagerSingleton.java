@@ -1,4 +1,4 @@
-package course.java.sdm.engine;
+package course.java.sdm.engine.managers;
 
 import course.java.sdm.engine.entities.*;
 
@@ -11,6 +11,7 @@ public class SystemManagerSingleton {
     public String formatNumber(double num) {
         return D2F.format(num);
     }
+    public static final String STRING_SEPARATOR = " | ";
 
     /*
         private static DecimalFormat df2 = new DecimalFormat("#.##");
@@ -75,6 +76,10 @@ public class SystemManagerSingleton {
 
     public Map<Integer, Product> getProductsMap() {
         return idToProduct;
+    }
+
+    public Product getProduct(int id) {
+        return idToProduct.getOrDefault(id, null);
     }
 
     public ArrayList<Map<String, Object>> getProductsDescriptionAndStatistics() {
