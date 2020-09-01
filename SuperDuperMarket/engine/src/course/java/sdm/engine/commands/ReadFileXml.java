@@ -28,6 +28,8 @@ public class ReadFileXml implements MenuItem {
                 if(!systemManager.getIsFileLoaded()) {
                     systemManager.fileLoaded();
                 }
+            } else {
+                //File is not valid
             }
         } catch(FileNotFoundException ex) {
             msg = "File was not found. Please enter a valid path to file. ";

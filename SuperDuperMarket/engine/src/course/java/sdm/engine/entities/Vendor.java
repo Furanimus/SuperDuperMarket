@@ -7,7 +7,7 @@ public class Vendor {
     private int PPK;
     private Location location;
     private Map<Integer, Integer> idToPrice;
-    //private Map<Integer, Product> idToProduct;
+    private Map<Integer, Product> idToProduct;
 
     public int getId() {
         return id;
@@ -25,11 +25,9 @@ public class Vendor {
         return idToPrice.getOrDefault(productId, -1);
     }
 
-    public Vendor() {
-    }
-
-    public void addProduct(Integer id, int price) {
-        idToPrice.put(id, price);
+    public void addProduct(Product product, int price) {
+        idToPrice.put(product.getId(), price);
+        idToProduct.put(product.getId(), new Product(product,price));
     }
 
     @Override
@@ -45,6 +43,7 @@ public class Vendor {
         this.PPK = PPK;
         this.location = location;
         idToPrice = new HashMap<>();
+        idToProduct = new HashMap<>();
     }
 
     public String getName() {
@@ -55,7 +54,15 @@ public class Vendor {
         return PPK;
     }
 
+    public Product getProduct(int id) {
+        return idToProduct.getOrDefault(id, null);
+    }
+
     public Location getLocation() {
         return location;
+    }
+
+    public Map<Integer, Product> getProductsMap() {
+        return idToProduct;
     }
 }

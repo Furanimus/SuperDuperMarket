@@ -1,46 +1,98 @@
 package course.java.sdm.engine.entities;
 
 import course.java.sdm.engine.managers.SystemManagerSingleton;
-import course.java.sdm.engine.managers.VendorManager;
+import course.java.sdm.engine.utils.MyUtils;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Order {
-
-    //private Customer orderingCustomer;
+    public final DateFormat DF = new SimpleDateFormat(DATE_FORMAT);
+    private static final String DATE_FORMAT = "dd/mm-hh:mm";
     private final int DAYS = 31;
     private final int MONTHS = 12;
     private final int HOURS = 24;
     private final int MINUTES = 60;
-    private static final String DATE_FORMAT = "dd/mm-hh:mm";
-    private VendorManager vendorManager = VendorManager.getInstance();
-    private Vendor whereFrom;
-
-    private DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+    //private Customer orderingCustomer;
+    private static int orderIdTracker;
+    private int orderId;
+    private double totalPrice;
+    private double deliveryCost;
+    private double totalProductsPrice;
     private Date date;
-    //private List<Product> orderedProducts;
     private Map<Integer, Double> productIdToAmount = new HashMap<>();
-    ;
-    private Location targetLocation;
+    private Vendor whereFrom;
 
     public Order(Vendor whereFrom) {
         this.whereFrom = whereFrom;
+        orderId = orderIdTracker++;
     }
+
+    public void setTotalPrice() {
+        totalPrice = totalProductsPrice + deliveryCost;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public DateFormat getDF() {
+        return DF;
+    }
+
+    public double getDeliveryCost() {
+        return deliveryCost;
+    }
+
+    public double getTotalProductsPrice() {
+        return totalProductsPrice;
+    }
+
+    public void setDeliveryCost() {
+        deliveryCost = whereFrom.getPPK() * targetLocation.measureDistance(whereFrom.getLocation());
+    }
+
+    public void setTotalProductsPrice() {
+        for (Product product : whereFrom.getProductsMap().values()) {
+            totalProductsPrice += product.getPrice();
+        }
+    }
+
+
+    public Date getDate() {
+        return date;
+    }
+
+    public int  getId() {
+        return orderId;
+    }
+
+    public double getProductAmount(int productId) {
+        return productIdToAmount.getOrDefault(productId, 0.0);
+    }
+
+    public boolean isContainProduct(int productId) {
+        return productIdToAmount.containsKey(productId);
+    }
+
+    public double getTotalItemCount() {
+        double totalCount = 0;
+        for (double itemCount : productIdToAmount.values()) {
+            totalCount += itemCount;
+        }
+        return totalCount;
+    }
+
+    private Location targetLocation;
 
     public void setTargetLocation(Location targetLocation) {
         this.targetLocation = targetLocation;
     }
 
-    private static int orderId = 0;
-
     public Order() {
-        orderId = orderId++;
-    }
-
-    public static int getOrderId() {
-        return orderId;
+        orderId = orderIdTracker++;
     }
 
     public Vendor getWhereFrom() {
@@ -66,11 +118,7 @@ public class Order {
                 else if (ints[2] > HOURS || ints[2] < 1) {throw new Exception("Hours must be between 00-24"); } //result = false; }
                 else if (ints[3] > MINUTES || ints[3] < 1) { throw new Exception("Hours must be between 00-60"); } //result = false; }
             }
-            else {
-                System.out.println("In here!!!!!!");
-            }
         }
-
         return  result;
     }
 
@@ -78,7 +126,7 @@ public class Order {
         boolean result = false;
         try {
             if (dateChecker(dateFormat)) {
-                this.date = df.parse(dateFormat);
+                this.date = DF.parse(dateFormat);
                 result = true;
             } else {
                 System.out.println("The format was not correct. Please enter a date in the format of " + DATE_FORMAT);
@@ -92,12 +140,8 @@ public class Order {
         return result;
     }
 
-//    public List<Product> getOrderedProducts() {
-//        return orderedProducts;
-//    }
-
-    public Map<Integer, Double> getProductIdToAmount() {
-        return productIdToAmount;
+    public int getDifferentProductCount() {
+        return productIdToAmount.size();
     }
 
     public static String getDATE_FORMAT() {
@@ -108,22 +152,37 @@ public class Order {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int id : productIdToAmount.keySet()) {
-            Product product = SystemManagerSingleton.getInstance().getProduct(id);
+            Product product = whereFrom.getProduct(id);
             sb.append("Product Id: ");
             sb.append(product.getId());
-            sb.append(SystemManagerSingleton.STRING_SEPARATOR);
+            sb.append(MyUtils.STRING_SEPARATOR);
             sb.append("Product Name: ");
             sb.append(product.getName());
-            sb.append(SystemManagerSingleton.STRING_SEPARATOR);
+            sb.append(MyUtils.STRING_SEPARATOR);
             sb.append("Purchase category: ");
             sb.append(product.getPurchaseCategory());
-            sb.append(SystemManagerSingleton.STRING_SEPARATOR);
-            //sb.append("Product Price: ");
-            //sb.append(product.getPrice());
-//          sb.append(SystemManagerSingleton.STRING_SEPARATOR);
+            sb.append(MyUtils.STRING_SEPARATOR);
+            sb.append("Product Price: ");
+            sb.append(product.getPrice());
+            sb.append(MyUtils.STRING_SEPARATOR);
+            sb.append("Amount taken: ");
             sb.append(productIdToAmount.get(id));
-
+            sb.append(MyUtils.STRING_SEPARATOR);
+            sb.append("Total price: ");
+            sb.append(productIdToAmount.get(id) * product.getPrice());
+            sb.append("\n");
         }
+        int ppk = whereFrom.getPPK();
+        sb.append("store PPK: ");
+        sb.append(ppk);
+        sb.append(MyUtils.STRING_SEPARATOR);
+        double distance = targetLocation.measureDistance(whereFrom.getLocation());
+        sb.append("Distance from you: ");
+        sb.append(MyUtils.formatNumber(distance));
+        sb.append(MyUtils.STRING_SEPARATOR);
+        sb.append("Delivery price: ");
+        sb.append(MyUtils.formatNumber(ppk * distance));
+
         return sb.toString();
     }
 
@@ -135,7 +194,13 @@ public class Order {
         }
     }
 
-    public double calculateTotalPrice(int productId) {
-        return 0;
+    public void adjustWeightAmounts() {
+        for (int productId : productIdToAmount.keySet()) {
+            Product product = SystemManagerSingleton.getInstance().getProductsMap().get(productId);
+            if (product.getPurchaseCategory().equals("Weight")) {
+                productIdToAmount.put(productId, 1.0);
+            }
+
+        }
     }
 }

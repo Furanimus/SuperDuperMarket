@@ -1,13 +1,9 @@
 package course.java.sdm.consoleui;
 
 import course.java.sdm.engine.commands.*;
-import course.java.sdm.engine.entities.Location;
-import course.java.sdm.engine.entities.Order;
-import course.java.sdm.engine.entities.Product;
-import course.java.sdm.engine.entities.Vendor;
+import course.java.sdm.engine.entities.*;
 import course.java.sdm.engine.exceptions.LocationOutOfBoundsException;
-import course.java.sdm.engine.managers.SystemManagerSingleton;
-import course.java.sdm.engine.managers.VendorManager;
+import course.java.sdm.engine.managers.*;
 
 import java.util.*;
 
@@ -18,7 +14,7 @@ public class MainMenuImpl implements Menu {
     public static List<MenuItem> mainMenu = new ArrayList<>();
     private static final Scanner SCANNER = new Scanner(System.in);
     private final SystemManagerSingleton systemManager = SystemManagerSingleton.getInstance();
-    private final VendorManager vendorManager = VendorManager.getInstance();
+    private final VendorManagerSingleton vendorManager = VendorManagerSingleton.getInstance();
 
     public MainMenuImpl() {
         initMenu();
@@ -111,10 +107,11 @@ public class MainMenuImpl implements Menu {
                 handleMakeOrder();
                 break;
             case 5:
-
+                System.out.println(mainMenu.get(userChoice - 1).activate(systemManager));
                 break;
             case 6:
                 ConsoleUIRunner.isRunning = false;
+                System.out.println(mainMenu.get(userChoice - 1).activate(systemManager));
             default:
                 break;
         }
@@ -133,43 +130,48 @@ public class MainMenuImpl implements Menu {
         Vendor vendor = vendorManager.getVendor((int) vendorInfo.get("Id"));
         if (vendor != null) {
             Order order = new Order(vendor);
-            collectOrderItems(order, vendorInfo);
+            do {
+                System.out.println("Please enter the date you wish the order will arrive (Please use the following format: " + Order.getDATE_FORMAT());
+            } while(!readDate(order));
+            do {
+                System.out.println("Please enter the location to which the order will be sent");
+            } while(!readLocation(order));
+            collectOrderItems(order, vendor);
             prepareOrderToFinish(order);
         } else {
             System.out.println("Store does not exist");
         }
-
-      //  int vendorId = (Integer) vendorInfo.get("Id");
-
-        //Map<Integer, Object> products;
-      /*
-        do {
-            System.out.println("Please enter the date you wish the order will arrive (Please use the following format: " + Order.getDATE_FORMAT());
-        } while(!readDate(order));
-        do {
-            System.out.println("Please enter the location to which the order will be sent");
-        } while(!readLocation(order));
-
-       */
-
-
-
     }
 
     private void prepareOrderToFinish(Order order) {
-        System.out.println("Please find the order details below:");
-        System.out.println(order.toString());
-        System.out.println("");
+        if (order.getDifferentProductCount() == 0) {
+            System.out.println("The order is empty.");
+        } else {
+            System.out.println("Please find the order details below:");
+            System.out.println(order.toString());
+            System.out.println("Do you wish to proceed with the order? Enter 'y' to save the order or 'n' to drop it");
+            String str = "";
+
+            while (!str.equals("y") && !str.equals(("n"))) {
+                str = SCANNER.nextLine();
+                if (str.equals("y")) {
+                    systemManager.getOrderManager().addOrder(order);
+                    System.out.println("Your order has been registered in the system");
+                } else if (str.equals("n")) {
+                    System.out.println("Your order has been dropped");
+                } else {
+                    System.out.println("Please enter 'y' to save the order or 'n' to drop it");
+                }
+            }
+        }
     }
 
-
-    private void collectOrderItems(Order order, Map<String, Object> vendorInfo) {
+    private void collectOrderItems(Order order, Vendor vendor) {
         String input;
-        Map<Integer, Object> products = (Map<Integer, Object>)vendorInfo.get("Products");
-        Vendor vendor = order.getWhereFrom();
+        Map<Integer, Product> products = vendor.getProductsMap();
         //Map<Integer, Product> idToProduct = systemManager.getProductsMap();
         do {
-            System.out.println(getItemsString(products)); //TODO remove the number of times....
+            printProducts(products);
             System.out.println("Please enter the item ID you would like to add to the cart. Enter the letter q to wrap up the order.");
             input = SCANNER.nextLine();
             if(!input.equals(ESCAPE_CHAR)) {
@@ -189,6 +191,12 @@ public class MainMenuImpl implements Menu {
                 }
             }
         } while (!input.equals(ESCAPE_CHAR));
+    }
+
+    private void printProducts(Map<Integer, Product> products) {
+        for(Product product : products.values()) {
+            System.out.println(product);
+        }
     }
 
     private double readAmountFromUser(Product product) {
@@ -254,6 +262,10 @@ public class MainMenuImpl implements Menu {
             sb.append(ConsoleUIRunner.SEPARATOR);
             sb.append("Product Average Price: ");
             sb.append(item.get("Product Average Price"));
+            sb.append(ConsoleUIRunner.SEPARATOR);
+            sb.append("Product was sold: ");
+            sb.append(item.get("Times Sold"));
+            sb.append(" times");
             sb.append("\n");
         }
         return sb.toString();
@@ -307,7 +319,7 @@ public class MainMenuImpl implements Menu {
 
     private int showStoresAndPick() {
         int index = 1;
-        VendorManager vendorManager = VendorManager.getInstance();
+        VendorManagerSingleton vendorManager = VendorManagerSingleton.getInstance();
         ArrayList<Map<String, Object>> vendors = vendorManager.getVendorsInfo();
         System.out.println("Please choose the store you would like to make a purchase from:");
         for (Map<String, Object> vendor : vendors) {

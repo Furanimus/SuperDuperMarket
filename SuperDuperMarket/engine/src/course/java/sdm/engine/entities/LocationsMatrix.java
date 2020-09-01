@@ -19,4 +19,12 @@ public class LocationsMatrix {
     public void setLocation(int x, int y) {
         locationMatrix[x-1][y-1] = true;
     }
+
+    public void reset() {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                locationMatrix[i][j] = false;
+            }
+        }
+    }
 }

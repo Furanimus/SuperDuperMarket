@@ -5,6 +5,7 @@ import course.java.sdm.engine.entities.LocationsMatrix;
 import course.java.sdm.engine.entities.Product;
 import course.java.sdm.engine.entities.Vendor;
 import course.java.sdm.engine.exceptions.LocationAlreadyRegisteredException;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,15 +13,16 @@ import java.util.Map;
 import java.util.TreeMap;
 
 //TODO Singleton
-    public class VendorManager {
+    public class VendorManagerSingleton {
         private Map<Integer, Vendor> idToVendor;
         private LocationsMatrix locationsMatrix;
-        private static VendorManager instance = null;
+        private static VendorManagerSingleton instance = null;
+
         public Map<Integer, Vendor> getIdToVendor() {
             return idToVendor;
         }
 
-    private VendorManager() {
+    private VendorManagerSingleton() {
         idToVendor = new HashMap<>();
         locationsMatrix = new LocationsMatrix();
     }
@@ -29,9 +31,9 @@ import java.util.TreeMap;
             return idToVendor.getOrDefault(id, null);
     }
 
-    public static synchronized VendorManager getInstance() {
+    public static synchronized VendorManagerSingleton getInstance() {
             if (instance == null) {
-                instance = new VendorManager();
+                instance = new VendorManagerSingleton();
             }
             return instance;
         }
@@ -134,4 +136,13 @@ import java.util.TreeMap;
 
              */
         }
+
+//    public void setNewVendorMap(Map<Integer, Vendor> newMap) {
+//            idToVendor = newMap;
+//    }
+
+    public void resetData() {
+        idToVendor = new TreeMap<>();
+        locationsMatrix.reset();
     }
+}

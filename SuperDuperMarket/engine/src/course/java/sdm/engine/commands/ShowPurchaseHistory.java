@@ -10,7 +10,6 @@ public class ShowPurchaseHistory implements MenuItem {
 
     @Override
     public Object activate(SystemManagerSingleton systemManager) {
-        System.out.println("In ShowPurchaseHistory");
-        return "Not Implemented yet";
+        return systemManager.getOrderManager().getAllOrdersStr();
     }
 }

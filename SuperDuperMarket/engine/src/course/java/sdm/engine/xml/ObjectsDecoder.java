@@ -1,7 +1,7 @@
 package course.java.sdm.engine.xml;
 
 import course.java.sdm.engine.managers.SystemManagerSingleton;
-import course.java.sdm.engine.managers.VendorManager;
+import course.java.sdm.engine.managers.VendorManagerSingleton;
 import course.java.sdm.engine.entities.Location;
 import course.java.sdm.engine.entities.Product;
 import course.java.sdm.engine.entities.Vendor;
@@ -9,11 +9,13 @@ import course.java.sdm.engine.xml.jaxbobjects.SDMItem;
 import course.java.sdm.engine.xml.jaxbobjects.SDMSell;
 import course.java.sdm.engine.xml.jaxbobjects.SDMStore;
 import course.java.sdm.engine.xml.jaxbobjects.SuperDuperMarketDescriptor;
+import sun.reflect.generics.tree.Tree;
 
 import javax.xml.bind.*;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class ObjectsDecoder {
 
@@ -22,11 +24,11 @@ public class ObjectsDecoder {
     private final String JAXB_XML_PACKAGE_NAME = "course.java.sdm.engine.xml.jaxbobjects";
     private  String xmlPath;
     private  SystemManagerSingleton systemManagerInstance;
-    private  VendorManager vendorManager;
+    private VendorManagerSingleton vendorManager;
 
     public ObjectsDecoder() {
         this.systemManagerInstance = SystemManagerSingleton.getInstance();
-        vendorManager = VendorManager.getInstance();
+        vendorManager = VendorManagerSingleton.getInstance();
     }
 
     //TODO check why second file fails to deserialize
@@ -47,19 +49,23 @@ public class ObjectsDecoder {
     private void copyFromJAXB(SystemManagerSingleton systemManagerInstance, SuperDuperMarketDescriptor descriptor) {
         List<SDMItem> readItems = descriptor.getSDMItems().getSDMItem();
         List<SDMStore> readStores = descriptor.getSDMStores().getSDMStore();
+        systemManagerInstance.resetData();
         copyItems(systemManagerInstance.getProductsMap(), readItems);
-        copyStores(vendorManager.getIdToVendor(), readStores);
+        copyStores(readStores);
     }
 
-    private void copyStores(Map<Integer, Vendor> vendorsMap, List<SDMStore> storeList) {
+    private void copyStores(List<SDMStore> storeList) {
+        Map<Integer,Product> productMap = systemManagerInstance.getProductsMap();
+        //Map<Integer,Product> newMap = new TreeMap<>();
+        //systemManager <- setMap(newMap)
         for(SDMStore store : storeList) {
             Location newLocation = new Location(store.getLocation().getX(), store.getLocation().getY());
-            Vendor toAdd = new Vendor(store.getId(), store.getName(), store.getDeliveryPpk(), newLocation);
-            vendorManager.addVendor(toAdd);
-            Map<Integer, Integer> prices = vendorsMap.get(store.getId()).getIdToPrice();
+            Vendor vendorToAdd = new Vendor(store.getId(), store.getName(), store.getDeliveryPpk(), newLocation);
+            //Map<Integer, Integer> prices = vendorsMap.get(store.getId()).getIdToPrice();
             for(SDMSell sdmSell : store.getSDMPrices().getSDMSell()) {
-                prices.put(sdmSell.getItemId(), sdmSell.getPrice());
+                vendorToAdd.addProduct(productMap.get(sdmSell.getItemId()), sdmSell.getPrice());
             }
+            vendorManager.addVendor(vendorToAdd);
         }
     }
 

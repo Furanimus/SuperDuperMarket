@@ -6,31 +6,15 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class SystemManagerSingleton {
-
-    private final DecimalFormat D2F = new DecimalFormat("#.##");
-    public String formatNumber(double num) {
-        return D2F.format(num);
-    }
-    public static final String STRING_SEPARATOR = " | ";
-
-    /*
-        private static DecimalFormat df2 = new DecimalFormat("#.##");
-
-    public static void main(String[] args) {
-
-        double input = 3.14159265359;
-        System.out.println("double : " + input);
-        System.out.println("double : " + df2.format(input));    //3.14
-     */
-    private final int NUM_OF_COLS = 6;
     private String filePath;
-
     private boolean isFileLoaded = false;
-
     private static SystemManagerSingleton instance = null;
-    private final VendorManager vendorManager;
-    private final Map<Integer,Product> idToProduct;
-    private final Map<Integer, Order> allOrders;
+    private final VendorManagerSingleton vendorManager;
+    private final OrderManager orderManager;
+
+    private Map<Integer,Product> idToProduct;
+    //private final Map<Integer, Order> allOrders;
+
 
     public boolean getIsFileLoaded() {
         return isFileLoaded;
@@ -44,7 +28,9 @@ public class SystemManagerSingleton {
         return filePath;
     }
 
-    public VendorManager getVendorManager() {
+    public OrderManager getOrderManager() { return orderManager; }
+
+    public VendorManagerSingleton getVendorManager() {
         return vendorManager;
     }
 
@@ -53,18 +39,10 @@ public class SystemManagerSingleton {
     }
 
     private SystemManagerSingleton() {
-        vendorManager = VendorManager.getInstance();
-        idToProduct = new HashMap<>();
-        allOrders = new TreeMap<>();
-
-        /*
-        //TODO remove
-        try {
-            justAnExample();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-        */
+        vendorManager = VendorManagerSingleton.getInstance();
+        idToProduct = new TreeMap<>();
+        //allOrders = new TreeMap<>();
+        orderManager = new OrderManager();
     }
 
     public static synchronized SystemManagerSingleton getInstance() {
@@ -76,6 +54,10 @@ public class SystemManagerSingleton {
 
     public Map<Integer, Product> getProductsMap() {
         return idToProduct;
+    }
+
+    public void setNewProductsMap(Map<Integer, Product> newMap) {
+        idToProduct = newMap;
     }
 
     public Product getProduct(int id) {
@@ -92,8 +74,14 @@ public class SystemManagerSingleton {
             productInfo.put("Number Of Stores that Sell the product",vendorManager.howManyVendorsSellItem(product.getId()));
             productInfo.put("Product Average Price",vendorManager.averageProductPrice(product.getId()));
             //TODO add count how many times the item was sold.
+            productInfo.put("Times Sold", orderManager.howMuchProductWasSold(product.getId()));
             result.add(productInfo);
         }
         return result;
+    }
+
+    public void resetData() {
+        idToProduct = new TreeMap<>();
+        vendorManager.resetData();
     }
 }
