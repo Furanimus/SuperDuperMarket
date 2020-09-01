@@ -56,7 +56,7 @@ public class Order {
 
     public void setTotalProductsPrice() {
         for (Product product : whereFrom.getProductsMap().values()) {
-            totalProductsPrice += product.getPrice();
+            totalProductsPrice += product.getPrice() * getProductAmount(product.getId());
         }
     }
 

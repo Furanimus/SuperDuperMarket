@@ -4,6 +4,7 @@ import course.java.sdm.engine.commands.*;
 import course.java.sdm.engine.entities.*;
 import course.java.sdm.engine.exceptions.LocationOutOfBoundsException;
 import course.java.sdm.engine.managers.*;
+import course.java.sdm.engine.utils.MyUtils;
 
 import java.util.*;
 
@@ -43,7 +44,7 @@ public class MainMenuImpl implements Menu {
                 userChoice = Integer.parseInt(SCANNER.nextLine());
                 return validate(userChoice);
             } catch (NumberFormatException ex) {
-                System.out.println("Wrong input entered (not a number): Please enter a valid number between 1-6");
+                System.out.println("Wrong input entered (not an integer): Please enter a valid integer between 1-6");
             }
             catch (Exception e) {
                 System.out.println("An error occurred: " + e.getMessage());
@@ -134,7 +135,7 @@ public class MainMenuImpl implements Menu {
                 System.out.println("Please enter the date you wish the order will arrive (Please use the following format: " + Order.getDATE_FORMAT());
             } while(!readDate(order));
             do {
-                System.out.println("Please enter the location to which the order will be sent");
+                System.out.println("The system will now read the location to which the order will be sent on a map of 50 X 50 in the following format (x, y)");
             } while(!readLocation(order));
             collectOrderItems(order, vendor);
             prepareOrderToFinish(order);
@@ -169,10 +170,9 @@ public class MainMenuImpl implements Menu {
     private void collectOrderItems(Order order, Vendor vendor) {
         String input;
         Map<Integer, Product> products = vendor.getProductsMap();
-        //Map<Integer, Product> idToProduct = systemManager.getProductsMap();
         do {
             printProducts(products);
-            System.out.println("Please enter the item ID you would like to add to the cart. Enter the letter q to wrap up the order.");
+            System.out.println("Please enter the item ID you would like to add to the cart. If you are done with the order, press q instead to wrap up.");
             input = SCANNER.nextLine();
             if(!input.equals(ESCAPE_CHAR)) {
                 try {
@@ -182,12 +182,14 @@ public class MainMenuImpl implements Menu {
 
                         System.out.println("Please enter the amount of items you wish to add");
                         double amount = readAmountFromUser(product);
-                                order.addProduct(id, amount);
+                        order.addProduct(id, amount);
                     } else {
                         System.out.println("Product is not sold in this store");
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Please enter a number that represents a product id");
+                } catch (InputMismatchException e) {
+                    System.out.println(e.getMessage());
                 }
             }
         } while (!input.equals(ESCAPE_CHAR));
@@ -200,11 +202,11 @@ public class MainMenuImpl implements Menu {
     }
 
     private double readAmountFromUser(Product product) {
-        double amount;
+        double amount = Double.parseDouble(SCANNER.nextLine());;
         if (product.getPurchaseCategory().equals("Quantity")) {
-             amount = Integer.parseInt(SCANNER.nextLine());
-        } else {
-            amount = Double.parseDouble(SCANNER.nextLine());
+            if (amount % 1 != 0) {
+                throw new InputMismatchException("Purchase category for prouduct is Quantity.\nPlease enter a Whole number");
+            }
         }
         return amount;
     }
@@ -212,9 +214,9 @@ public class MainMenuImpl implements Menu {
     private boolean readLocation(Order order) {
         boolean result = false;
         try {
-            System.out.println("Please enter coordinate X");
+            System.out.println("Please enter coordinate X (Value between 1-50)");
             int x = Integer.parseInt(SCANNER.nextLine());
-            System.out.println("Please enter coordinate Y");
+            System.out.println("Please enter coordinate Y (Value between 1-50)");
             int y = Integer.parseInt(SCANNER.nextLine());
             Location target = new Location(x, y);
             if(!systemManager.getVendorManager().isLocationExist(target)) {
@@ -239,7 +241,7 @@ public class MainMenuImpl implements Menu {
                     isValid = true;
                 }
             } catch (Exception e) {
-                System.out.println(e.getMessage() + "\nPlease enter a valid number between 1-50 for coordinate ");
+                System.out.println(e.getMessage() + "\nPlease enter a valid date as per format" + Order.getDATE_FORMAT());
             }
         }
         return isValid;
@@ -274,18 +276,27 @@ public class MainMenuImpl implements Menu {
     private String getVendorListString(List<Map<String, Object>> vendors) {
         StringBuilder sb = new StringBuilder();
 
-        for (Map<String, Object> product : vendors) {
+        for (Map<String, Object> vendor : vendors) {
             sb.append("Store name: ");
-            sb.append(product.get("Name"));
-            sb.append(ConsoleUIRunner.SEPARATOR);
+            sb.append(vendor.get("Name"));
+            sb.append(MyUtils.STRING_SEPARATOR);
             sb.append("Store Id: ");
-            sb.append(product.get("Id"));
-            sb.append(ConsoleUIRunner.SEPARATOR);
+            sb.append(vendor.get("Id"));
+            sb.append(MyUtils.STRING_SEPARATOR);
             sb.append("PPK: ");
-            sb.append(product.get("PPK"));
-            sb.append(ConsoleUIRunner.SEPARATOR);
+            sb.append(vendor.get("PPK"));
+            sb.append(MyUtils.STRING_SEPARATOR);
             sb.append("Store products: ");
-            sb.append(getItemsString((Map<Integer, Object>)product.get("Products")));//TODO AAA
+            sb.append(getItemsString((Map<Integer, Object>)vendor.get("Products")));//TODO AAA
+            sb.append("Orders made from this store: ");
+            List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByVendorId((int)vendor.get("Id"));
+            sb.append(OrderManagerSingleton.getInstance().getOrderInfoString(orders));
+            sb.append("Total products that were sold from this store: ");
+            sb.append(vendor.get("Total Sold Products"));
+            sb.append(MyUtils.STRING_SEPARATOR);
+            sb.append("Summed Delivery Price: ");
+            sb.append(vendor.get("Summed Delivery Price"));
+            sb.append("\n\n");
         }
         return sb.toString();
     }
@@ -305,9 +316,9 @@ public class MainMenuImpl implements Menu {
            sb.append("Purchase Category:");
            sb.append(currentProduct.get("Purchase Category"));
            sb.append(ConsoleUIRunner.SEPARATOR);
-           //sb.append("Number of times the product was sold from this store:");
-           //sb.append(currentProduct.get("Number of times the product was sold from this store")); //TODO add a function or something
-           //sb.append(ConsoleUIRunner.SEPARATOR);
+           sb.append("Number of times the product was sold from this store:");
+           sb.append(currentProduct.get("Time Sold"));
+           sb.append(ConsoleUIRunner.SEPARATOR);
            sb.append("Price:");
            sb.append(currentProduct.get("Price"));
            sb.append("\n");

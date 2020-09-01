@@ -1,16 +1,10 @@
 package course.java.sdm.engine.managers;
 
-import course.java.sdm.engine.entities.Location;
-import course.java.sdm.engine.entities.LocationsMatrix;
-import course.java.sdm.engine.entities.Product;
-import course.java.sdm.engine.entities.Vendor;
+import course.java.sdm.engine.entities.*;
 import course.java.sdm.engine.exceptions.LocationAlreadyRegisteredException;
 import sun.reflect.generics.tree.Tree;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 //TODO Singleton
     public class VendorManagerSingleton {
@@ -89,9 +83,18 @@ import java.util.TreeMap;
                 vendorInfo.put("Id",vendor.getId());
                 vendorInfo.put("Name",vendor.getName());
                 vendorInfo.put("Products", getVendorProductsInfo(vendor));
-                //vendorInfo.put("Past Orders",TODO);
                 vendorInfo.put("PPK",vendor.getPPK());
-                //vendorInfo.put("summed PPK",TODO);
+
+                List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByVendorId(vendor.getId());
+                vendorInfo.put("Past Orders",orders);
+                double totalProducts = 0;
+                int summedDeliveryPrice = 0;
+                for (Order order : orders) {
+                    summedDeliveryPrice += order.getDeliveryCost();
+                    totalProducts += order.getTotalItemCount();
+                }
+                vendorInfo.put("Total Sold Products", totalProducts);
+                vendorInfo.put("Summed Delivery Price",summedDeliveryPrice);
 
                 //TODO add count how many times the item was sold.
                 result.add(vendorInfo);
@@ -111,7 +114,7 @@ import java.util.TreeMap;
                 currentProduct.put("Name",product.getName());
                 currentProduct.put("Purchase Category", product.getPurchaseCategory());
                 currentProduct.put("Price", prices.get(productId));
-                //TODO currentProduct.put("Time Sold", PLACE_HOLDER);
+                currentProduct.put("Time Sold", OrderManagerSingleton.getInstance().howMuchProductWasSold(productId,vendor.getId()));
                 products.put(productId, currentProduct);
             }
             return products;

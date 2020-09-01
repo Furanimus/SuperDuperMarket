@@ -21,7 +21,7 @@ public class Location {
             this.x = x;
             this.y = y;
         } else {
-            throw new LocationOutOfBoundsException("Location is not within range [1,50]");
+            throw new LocationOutOfBoundsException("Location is not within range [1,1] - [50,50]");
         }
     }
 

@@ -2,7 +2,6 @@ package course.java.sdm.engine.managers;
 
 import course.java.sdm.engine.entities.*;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class SystemManagerSingleton {
@@ -10,7 +9,7 @@ public class SystemManagerSingleton {
     private boolean isFileLoaded = false;
     private static SystemManagerSingleton instance = null;
     private final VendorManagerSingleton vendorManager;
-    private final OrderManager orderManager;
+    private final OrderManagerSingleton orderManager;
 
     private Map<Integer,Product> idToProduct;
     //private final Map<Integer, Order> allOrders;
@@ -28,7 +27,7 @@ public class SystemManagerSingleton {
         return filePath;
     }
 
-    public OrderManager getOrderManager() { return orderManager; }
+    public OrderManagerSingleton getOrderManager() { return orderManager; }
 
     public VendorManagerSingleton getVendorManager() {
         return vendorManager;
@@ -40,9 +39,10 @@ public class SystemManagerSingleton {
 
     private SystemManagerSingleton() {
         vendorManager = VendorManagerSingleton.getInstance();
+        orderManager = OrderManagerSingleton.getInstance();
         idToProduct = new TreeMap<>();
         //allOrders = new TreeMap<>();
-        orderManager = new OrderManager();
+
     }
 
     public static synchronized SystemManagerSingleton getInstance() {
