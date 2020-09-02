@@ -1,12 +1,13 @@
 package course.java.sdm.engine.commands;
 
-import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.exceptions.LocationOutOfBoundsException;
+import course.java.sdm.engine.managers.EngineManagerSingleton;
 import course.java.sdm.engine.xml.FileValidator;
 import course.java.sdm.engine.xml.ObjectsDecoder;
+import course.java.sdm.engine.xml.jaxbobjects.SuperDuperMarketDescriptor;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 public class ReadFileXml implements MenuItem {
     private String msg = "";
@@ -19,37 +20,42 @@ public class ReadFileXml implements MenuItem {
     }
 
     @Override
-    public Object activate(SystemManagerSingleton systemManager) {
+    public Object execute(EngineManagerSingleton systemManager) {
         String path = systemManager.getFilePath();
         try {
-            if (validateFile(path)) {
-                copyFromXml(path);
-                msg = "File was loaded successfully";
-                if(!systemManager.getIsFileLoaded()) {
-                    systemManager.fileLoaded();
+            File file = new File(path);
+            if (fileValidator.validateExistence(file)) {
+                try (InputStream inputStream = new FileInputStream(file)) {
+                    SuperDuperMarketDescriptor sdmDescriptor = reader.deserializeFrom(inputStream);
+                    if (fileValidator.validateAppWise(sdmDescriptor)) {
+                        copyFromXml(sdmDescriptor);
+                        msg = "File was loaded successfully";
+                        if (!systemManager.getIsFileLoaded()) {
+                            systemManager.fileLoaded();
+                        }
+                    }
                 }
-            } else {
-                //File is not valid
             }
+        } catch (LocationOutOfBoundsException e){
+            msg = "There is a location in file that is not within range of coordinates map";
         } catch(FileNotFoundException ex) {
             msg = "File was not found. Please enter a valid path to file. ";
         } catch (IOException e) {
             msg = "IO exception:" + e.getMessage();
-        }
-        catch(JAXBException ex) {
+        } catch(JAXBException ex) {
             msg = "JAXB Exception:" + ex.getMessage();
         } catch(Exception ex) {
-            msg = "Unknown exception occurred:" + ex.getMessage();
+            msg = ex.getMessage();
         }
         return msg;
     }
 
     private boolean validateFile(String path) {
-        return (fileValidator.validateExistence() && fileValidator.validateAppWise());
+        return true; //(fileValidator.validateAppWise());
     }
 
     //TODO
-    private void copyFromXml(String filePath) throws IOException, JAXBException {
-        reader.jaxbObjectToMyObject();
+    private void copyFromXml(SuperDuperMarketDescriptor sdmDescriptor) throws IOException, JAXBException {
+        reader.jaxbObjectToMyObject(sdmDescriptor);
     }
 }

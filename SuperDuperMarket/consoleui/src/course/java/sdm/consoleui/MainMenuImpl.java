@@ -14,7 +14,7 @@ public class MainMenuImpl implements Menu {
     private boolean isChoiceValid;
     public static List<MenuItem> mainMenu = new ArrayList<>();
     private static final Scanner SCANNER = new Scanner(System.in);
-    private final SystemManagerSingleton systemManager = SystemManagerSingleton.getInstance();
+    private final EngineManagerSingleton systemManager = EngineManagerSingleton.getInstance();
     private final VendorManagerSingleton vendorManager = VendorManagerSingleton.getInstance();
 
     public MainMenuImpl() {
@@ -93,26 +93,26 @@ public class MainMenuImpl implements Menu {
             case 1:
                 System.out.println("Please enter file's path");
                 systemManager.setFilePath(SCANNER.nextLine());
-                System.out.println(mainMenu.get(userChoice - 1).activate(systemManager));
+                System.out.println(mainMenu.get(userChoice - 1).execute(systemManager));
                 break;
             case 2:
                 ArrayList<Map<String, Object>> vendors =
-                        (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).activate(systemManager);
+                        (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).execute(systemManager);
                 System.out.println(getVendorListString(vendors));
                 break;
             case 3:ArrayList<Map<String, Object>> products =
-                    (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).activate(systemManager);
+                    (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).execute(systemManager);
                 System.out.println(getProductsString(products));
                 break;
             case 4:
                 handleMakeOrder();
                 break;
             case 5:
-                System.out.println(mainMenu.get(userChoice - 1).activate(systemManager));
+                System.out.println(mainMenu.get(userChoice - 1).execute(systemManager));
                 break;
             case 6:
                 ConsoleUIRunner.isRunning = false;
-                System.out.println(mainMenu.get(userChoice - 1).activate(systemManager));
+                System.out.println(mainMenu.get(userChoice - 1).execute(systemManager));
             default:
                 break;
         }
@@ -172,7 +172,7 @@ public class MainMenuImpl implements Menu {
         Map<Integer, Product> products = vendor.getProductsMap();
         do {
             printProducts(products);
-            System.out.println("Please enter the item ID you would like to add to the cart. If you are done with the order, press q instead to wrap up.");
+            System.out.println("Please enter the item ID you would like to add to the cart. If you are done with the order, press q to finish.");
             input = SCANNER.nextLine();
             if(!input.equals(ESCAPE_CHAR)) {
                 try {
@@ -180,7 +180,7 @@ public class MainMenuImpl implements Menu {
                     if(products.containsKey(id)) {
                         Product product = systemManager.getProduct(id);
 
-                        System.out.println("Please enter the amount of items you wish to add");
+                        System.out.println("Choose the amount of the requested product: For quantity specify number of units and for Weight specify the weight in kilos");
                         double amount = readAmountFromUser(product);
                         order.addProduct(id, amount);
                     } else {
@@ -263,7 +263,7 @@ public class MainMenuImpl implements Menu {
             sb.append(item.get("Number Of Stores that Sell the product"));
             sb.append(ConsoleUIRunner.SEPARATOR);
             sb.append("Product Average Price: ");
-            sb.append(item.get("Product Average Price"));
+            sb.append(MyUtils.formatNumber((double)item.get("Product Average Price")));
             sb.append(ConsoleUIRunner.SEPARATOR);
             sb.append("Product was sold: ");
             sb.append(item.get("Times Sold"));

@@ -1,7 +1,7 @@
 package course.java.sdm.engine.commands;
 
 
-import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.managers.EngineManagerSingleton;
 
 public class ExitSystem implements MenuItem {
     @Override
@@ -10,7 +10,7 @@ public class ExitSystem implements MenuItem {
     }
 
     @Override
-    public Object activate(SystemManagerSingleton systemManager) {
+    public Object execute(EngineManagerSingleton systemManager) {
         return "Thanks for using my Super Duper Market \n" +
                 "Goodbye";
     }

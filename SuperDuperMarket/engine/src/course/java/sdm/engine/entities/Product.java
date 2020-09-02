@@ -1,6 +1,5 @@
 package course.java.sdm.engine.entities;
 
-import course.java.sdm.engine.managers.SystemManagerSingleton;
 import course.java.sdm.engine.utils.MyUtils;
 
 public class Product {

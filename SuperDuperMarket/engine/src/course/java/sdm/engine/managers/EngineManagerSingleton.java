@@ -4,16 +4,13 @@ import course.java.sdm.engine.entities.*;
 
 import java.util.*;
 
-public class SystemManagerSingleton {
+public class EngineManagerSingleton {
     private String filePath;
     private boolean isFileLoaded = false;
-    private static SystemManagerSingleton instance = null;
+    private static EngineManagerSingleton instance = null;
     private final VendorManagerSingleton vendorManager;
     private final OrderManagerSingleton orderManager;
-
     private Map<Integer,Product> idToProduct;
-    //private final Map<Integer, Order> allOrders;
-
 
     public boolean getIsFileLoaded() {
         return isFileLoaded;
@@ -37,27 +34,21 @@ public class SystemManagerSingleton {
         filePath = path;
     }
 
-    private SystemManagerSingleton() {
+    private EngineManagerSingleton() {
         vendorManager = VendorManagerSingleton.getInstance();
         orderManager = OrderManagerSingleton.getInstance();
         idToProduct = new TreeMap<>();
-        //allOrders = new TreeMap<>();
-
     }
 
-    public static synchronized SystemManagerSingleton getInstance() {
+    public static synchronized EngineManagerSingleton getInstance() {
         if (instance == null) {
-            instance = new SystemManagerSingleton();
+            instance = new EngineManagerSingleton();
         }
         return instance;
     }
 
     public Map<Integer, Product> getProductsMap() {
         return idToProduct;
-    }
-
-    public void setNewProductsMap(Map<Integer, Product> newMap) {
-        idToProduct = newMap;
     }
 
     public Product getProduct(int id) {
@@ -83,5 +74,6 @@ public class SystemManagerSingleton {
     public void resetData() {
         idToProduct = new TreeMap<>();
         vendorManager.resetData();
+        orderManager.reset();
     }
 }

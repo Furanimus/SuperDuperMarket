@@ -3,9 +3,7 @@ package course.java.sdm.engine.managers;
 import com.sun.org.apache.xpath.internal.operations.Or;
 import course.java.sdm.engine.entities.Order;
 import course.java.sdm.engine.utils.MyUtils;
-import sun.plugin.com.Utils;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +11,7 @@ import java.util.TreeMap;
 
 public class OrderManagerSingleton {
     private static OrderManagerSingleton instance;
+    private Map<Integer, Order> idToOrder = new TreeMap<>();
 
     private  OrderManagerSingleton() {
     }
@@ -24,7 +23,6 @@ public class OrderManagerSingleton {
         return instance;
     }
 
-    private Map<Integer, Order> idToOrder = new TreeMap<>();
 
     public List<Order> getOrdersByVendorId(int vendorId) {
         List<Order> result = new ArrayList<>();
@@ -44,7 +42,6 @@ public class OrderManagerSingleton {
                 result += order.getProductAmount(productId);
             }
         }
-
         return result;
     }
 
@@ -89,7 +86,9 @@ public class OrderManagerSingleton {
             sb.append(MyUtils.formatNumber(order.getTotalPrice()));
             sb.append("\n");
         }
-
+        if (sb.toString().isEmpty()) {
+            sb.append("No registered orders since last file upload");
+        }
         return sb.toString();
     }
 
@@ -131,5 +130,9 @@ public class OrderManagerSingleton {
         sb.append("}\n");
 
         return sb.toString();
+    }
+
+    public void reset() {
+        idToOrder = new TreeMap<>();
     }
 }

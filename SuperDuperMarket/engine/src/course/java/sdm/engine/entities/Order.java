@@ -1,10 +1,9 @@
 package course.java.sdm.engine.entities;
 
-import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.managers.EngineManagerSingleton;
 import course.java.sdm.engine.utils.MyUtils;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -196,7 +195,7 @@ public class Order {
 
     public void adjustWeightAmounts() {
         for (int productId : productIdToAmount.keySet()) {
-            Product product = SystemManagerSingleton.getInstance().getProductsMap().get(productId);
+            Product product = EngineManagerSingleton.getInstance().getProductsMap().get(productId);
             if (product.getPurchaseCategory().equals("Weight")) {
                 productIdToAmount.put(productId, 1.0);
             }

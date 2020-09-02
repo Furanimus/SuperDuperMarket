@@ -2,30 +2,25 @@ package course.java.sdm.engine.managers;
 
 import course.java.sdm.engine.entities.*;
 import course.java.sdm.engine.exceptions.LocationAlreadyRegisteredException;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 
 //TODO Singleton
     public class VendorManagerSingleton {
+        private static VendorManagerSingleton instance = null;
         private Map<Integer, Vendor> idToVendor;
         private LocationsMatrix locationsMatrix;
-        private static VendorManagerSingleton instance = null;
 
-        public Map<Integer, Vendor> getIdToVendor() {
-            return idToVendor;
+        private VendorManagerSingleton() {
+            idToVendor = new HashMap<>();
+            locationsMatrix = new LocationsMatrix();
         }
 
-    private VendorManagerSingleton() {
-        idToVendor = new HashMap<>();
-        locationsMatrix = new LocationsMatrix();
-    }
+        public Vendor getVendor(int id) {
+                return idToVendor.getOrDefault(id, null);
+        }
 
-    public Vendor getVendor(int id) {
-            return idToVendor.getOrDefault(id, null);
-    }
-
-    public static synchronized VendorManagerSingleton getInstance() {
+        public static synchronized VendorManagerSingleton getInstance() {
             if (instance == null) {
                 instance = new VendorManagerSingleton();
             }
@@ -75,7 +70,6 @@ import java.util.*;
                 return result;
         }
 
-        //TODO
         public ArrayList<Map<String, Object>> getVendorsInfo() {
             ArrayList<Map<String, Object>> result = new ArrayList<>();
             for (Vendor vendor : idToVendor.values()) {
@@ -96,7 +90,6 @@ import java.util.*;
                 vendorInfo.put("Total Sold Products", totalProducts);
                 vendorInfo.put("Summed Delivery Price",summedDeliveryPrice);
 
-                //TODO add count how many times the item was sold.
                 result.add(vendorInfo);
             }
             return result;
@@ -104,7 +97,7 @@ import java.util.*;
 
         public  Map<Integer, Object> getVendorProductsInfo(Vendor vendor) {
             Map<Integer, Object> products = new TreeMap<>();
-            Map<Integer, Product> allProducts = SystemManagerSingleton.getInstance().getProductsMap();
+            Map<Integer, Product> allProducts = EngineManagerSingleton.getInstance().getProductsMap();
             Map<Integer, Integer> prices = vendor.getIdToPrice();
 
             for (int productId : prices.keySet()) {
@@ -118,34 +111,10 @@ import java.util.*;
                 products.put(productId, currentProduct);
             }
             return products;
-
-            /*
-            for(Integer productId : vendor.getIdToPrice().values()) {
-
-            }
-            StringBuilder sb = new StringBuilder();
-            Map<Integer, Product> idToProduct = SystemManagerSingleton.getInstance().getProductsMap();
-            Map<Integer, Integer> idToPrice = vendor.getIdToPrice();
-
-            for (int productId : idToPrice.keySet()) {
-                sb.append(idToProduct.get(productId).toString());
-                sb.append(SEPARATOR);
-                sb.append("Product price: " + idToPrice.get(productId));
-                //TODO sb.append(numOfProductsSoldFromVendor(productId))
-                sb.append("\n");
-            }
-
-            return sb.toString();
-
-             */
         }
 
-//    public void setNewVendorMap(Map<Integer, Vendor> newMap) {
-//            idToVendor = newMap;
-//    }
-
-    public void resetData() {
-        idToVendor = new TreeMap<>();
-        locationsMatrix.reset();
-    }
+        public void resetData() {
+            idToVendor = new TreeMap<>();
+            locationsMatrix.reset();
+        }
 }

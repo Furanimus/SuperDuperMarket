@@ -1,29 +1,149 @@
 package course.java.sdm.engine.xml;
 
-import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.exceptions.*;
+import course.java.sdm.engine.xml.jaxbobjects.*;
 
-/*
-3.1.	הקובץ אכן קיים, והוא מסוג XML (די לבדוק לשם כך כי הוא נגמר בסיומת xml)
-3.2.	בתוך קבוצת המוצרים, אין 2 מוצרים בעלי id זהה
-3.3.	בתוך קבוצת החנויות, אין 2 חנויות בעלי id זהה
-3.4.	בתוך חנות אחת, בהגדרת מכירת מוצר – ההפניות הן רק למוצרים קיימים
-3.5.	כל מוצר נמכר לפחות ע"י חנות אחת
-3.6.	בתוך חנות אחת, מכירת מוצר לא מוגדרת פעמיים
-3.7.	מיקומי החנויות לא חורגים מרשת הקורדינטות של 50 ; 50 (x,y: [1,50])
- */
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 public class FileValidator {
-    private String filePath;
 
-    public FileValidator() {
-        this.filePath = SystemManagerSingleton.getInstance().getFilePath();
+    SuperDuperMarketDescriptor descriptor;
+
+    public boolean validateAppWise(SuperDuperMarketDescriptor sdmDescriptor) {
+        descriptor = sdmDescriptor;
+        boolean result = true;
+        result = testSDMStores(sdmDescriptor.getSDMStores());
+        if (result) {  result = testSDMItems(sdmDescriptor.getSDMItems()) ;}
+
+        return result;
     }
 
-    //TODO
-    public boolean validateAppWise() {
+    private boolean testSDMItems(SDMItems sdmItems) {
+        List<SDMItem> productsCollection = sdmItems.getSDMItem();
+        if (!testSDMItemsIds(productsCollection)) { throw new DuplicateItemIdsException("There are duplicate ids for products in file."); }
+        checkAllProductsAreSold(productsCollection); //Throws exception if there are issues
+        return true;
+    }
+    //TODO Item may be sold in one store but not in another (where count will be 0)
+
+    private void checkAllProductsAreSold(List<SDMItem> collection) {
+        List<SDMStore> stores = descriptor.getSDMStores().getSDMStore();
+        Map<Integer, Boolean> copy = new TreeMap<>();
+        for(SDMItem item : collection) {
+            copy.put(item.getId(), false);
+        }
+        for (SDMItem item : collection) {
+            for(SDMStore store : stores) {
+                List<SDMSell> sells = store.getSDMPrices().getSDMSell();
+                for(SDMSell sell : sells) {
+                    copy.put(sell.getItemId(), true);
+                }
+            }
+        }
+        for (Boolean isExist : copy.values()) {
+            if(!isExist) {
+                throw new ProductIsNotSoldByVendorException("File failed to load. There is a product that is not sold by any store");
+            }
+        }
+    }
+
+    private void checkAllStoresPointToExistingProducts(List<SDMStore> storesCollection) {
+        List<SDMItem> items = descriptor.getSDMItems().getSDMItem();
+        for(SDMStore store : storesCollection) {
+            List<SDMSell> sells = store.getSDMPrices().getSDMSell();
+            for(SDMSell sell : sells) {
+                int count = (int) items.stream()
+                        .map(SDMItem::getId)
+                        .filter(itemId -> itemId == sell.getItemId())
+                        .count();
+                if (count == 0) {
+                    throw new ProductIsNotSoldByVendorException("File failed to load. There is a store that sells a product with a non existing Id"); }
+            }
+        }
+    }
+
+    private boolean testSDMStores(SDMStores sdmStores) {
+        List<SDMStore> storesCollection = sdmStores.getSDMStore();
+        if(!checkStoreIds(storesCollection)) { throw new DuplicateStoresIdsException("There are duplicate ids for stores in file");}
+        if(!checkStoreCoordinates(storesCollection)) { throw new LocationOutOfBoundsException("Locations are not within maps range in file"); }
+        checkAllStoresPointToExistingProducts(storesCollection); //Throws exception if there are issues
+        checkProductIsSoldOnceInStore(storesCollection); //Throws exception if there are issues
         return true;
     }
 
-    public boolean validateExistence() {
-        return true;
+    private void checkProductIsSoldOnceInStore(List<SDMStore> storesCollection) {
+        for(SDMStore store : storesCollection) {
+            List<SDMSell> sells = store.getSDMPrices().getSDMSell();
+            int idsCount = (int) sells.stream()
+                    .mapToInt(SDMSell::getItemId)
+                    .distinct()
+                    .count();
+            if (idsCount < sells.size()) {
+                throw new DuplicateSoldItemInStoreException("There is an item that is registered twice in the same store");
+            }
+        }
+    }
+
+    private boolean checkStoreCoordinates(List<SDMStore> storesCollection) {
+        int size = (int) storesCollection.stream()
+                .map(SDMStore::getLocation)
+                .filter(location -> location.getX() > 50 || location.getX() < 1 || location.getY() > 50 || location.getY() < 1)
+                .count();
+        return size == 0;
+    }
+/*
+    private boolean checkDuplicateIds(List<T> collection) {
+        int count = (int) collection.stream()
+                .map(T::getId)
+                .count();
+        int distinctCount = (int) collection.stream()
+                .map(T::getId)
+                .distinct()
+                .count();
+
+        return count == distinctCount;
+    }
+ */
+
+    private boolean checkStoreIds(List<SDMStore> sdmStores) {
+        int count = (int) sdmStores.stream()
+                .map(SDMStore::getId)
+                .count();
+        int distinctCount = (int) sdmStores.stream()
+                .map(SDMStore::getId)
+                .distinct()
+                .count();
+
+        return count == distinctCount;
+    }
+
+    private boolean testSDMItemsIds(List<SDMItem> collection) {
+        int count = (int) collection.stream()
+                .map(SDMItem::getId)
+                .count();
+        int distinctCount = (int) collection.stream()
+                .map(SDMItem::getId)
+                .distinct()
+                .count();
+
+        return count == distinctCount;
+    }
+
+    public boolean validateExistence(File file) {
+        if (file.exists() && file.isFile() && getFileExtension(file).equals("xml")) {
+            return true;
+        } else {
+            throw new FileFormatIsNotXmlException("File failed to load. Format of target is not an .xml file");
+        }
+    }
+
+    private static String getFileExtension(File file) {
+        String fileName = file.getName();
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
     }
 }

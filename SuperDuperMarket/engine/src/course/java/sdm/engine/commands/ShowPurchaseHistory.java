@@ -1,6 +1,6 @@
 package course.java.sdm.engine.commands;
 
-import course.java.sdm.engine.managers.SystemManagerSingleton;
+import course.java.sdm.engine.managers.EngineManagerSingleton;
 
 public class ShowPurchaseHistory implements MenuItem {
     @Override
@@ -9,7 +9,7 @@ public class ShowPurchaseHistory implements MenuItem {
     }
 
     @Override
-    public Object activate(SystemManagerSingleton systemManager) {
+    public Object execute(EngineManagerSingleton systemManager) {
         return systemManager.getOrderManager().getAllOrdersStr();
     }
 }
