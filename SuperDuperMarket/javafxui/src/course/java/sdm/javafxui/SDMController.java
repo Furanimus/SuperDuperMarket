@@ -58,7 +58,7 @@ public class SDMController {
     }
 
     @FXML
-    void loadFile(ActionEvent event) {
+    private void loadFile(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select an XML file to load");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
@@ -66,29 +66,12 @@ public class SDMController {
         String msg = (String) commandsMap.get("ReadFileXml").execute(engineManager);
         isFileLoaded.set(engineManager.getIsFileLoaded());
         showLoadResult(msg);
-
-
-        //loadFileBtn.setText("Pressed");
-        //isFileLoaded.set(true);
-               /* FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select an XML file to load");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
-        File selectedFile = fileChooser.showOpenDialog(primaryStage);
-        if (selectedFile == null) {
-            return;
-        }
-
-        String absolutePath = selectedFile.getAbsolutePath();
-        selectedFileProperty.set(absolutePath);
-        isFileSelected.set(true);
-        */
     }
 
     private void showLoadResult(String msg) {
         Alert msgBox = new Alert(Alert.AlertType.INFORMATION, msg);
         msgBox.setTitle("Loading File Result");
         msgBox.showAndWait();
-
     }
 
     private void bindDisablePropertyButtons() {
