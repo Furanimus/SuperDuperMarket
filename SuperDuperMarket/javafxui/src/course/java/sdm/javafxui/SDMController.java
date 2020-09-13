@@ -4,7 +4,9 @@ import course.java.sdm.engine.managers.*;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -61,8 +63,10 @@ public class SDMController {
         fileChooser.setTitle("Select an XML file to load");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
         engineManager.setFilePath(fileChooser.showOpenDialog(primaryStage).getAbsolutePath());
-        commandsMap.get("ReadFileXml").execute(engineManager);
+        String msg = (String) commandsMap.get("ReadFileXml").execute(engineManager);
         isFileLoaded.set(engineManager.getIsFileLoaded());
+        showLoadResult(msg);
+
 
         //loadFileBtn.setText("Pressed");
         //isFileLoaded.set(true);
@@ -78,6 +82,13 @@ public class SDMController {
         selectedFileProperty.set(absolutePath);
         isFileSelected.set(true);
         */
+    }
+
+    private void showLoadResult(String msg) {
+        Alert msgBox = new Alert(Alert.AlertType.INFORMATION, msg);
+        msgBox.setTitle("Loading File Result");
+        msgBox.showAndWait();
+
     }
 
     private void bindDisablePropertyButtons() {

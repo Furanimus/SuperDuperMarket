@@ -29,7 +29,7 @@ public class ReadFileXml implements MenuItem {
                     SuperDuperMarketDescriptor sdmDescriptor = reader.deserializeFrom(inputStream);
                     if (fileValidator.validateAppWise(sdmDescriptor)) {
                         copyFromXml(sdmDescriptor);
-                        msg = "File was loaded successfully";
+                        msg = "File loaded successfully";
                         if (!systemManager.getIsFileLoaded()) {
                             systemManager.fileLoaded();
                         }
