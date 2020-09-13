@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class FileValidator {
-
     SuperDuperMarketDescriptor descriptor;
 
     public boolean validateAppWise(SuperDuperMarketDescriptor sdmDescriptor) {
@@ -17,8 +16,16 @@ public class FileValidator {
         boolean result = true;
         result = testSDMStores(sdmDescriptor.getSDMStores());
         if (result) {  result = testSDMItems(sdmDescriptor.getSDMItems()) ;}
+        if (result) {  result = testSDMCustomers(sdmDescriptor.getSDMCustomers()); }
 
         return result;
+    }
+
+    private boolean testSDMCustomers(SDMCustomers sdmCustomers) {
+        List<SDMCustomer> customersCollection = sdmCustomers.getSDMCustomer();
+        if (!checkCustomerIds(customersCollection)) { throw new DuplicateItemIdsException("There are duplicate ids for customers in file."); }
+
+        return true;
     }
 
     private boolean testSDMItems(SDMItems sdmItems) {
@@ -27,7 +34,6 @@ public class FileValidator {
         checkAllProductsAreSold(productsCollection); //Throws exception if there are issues
         return true;
     }
-    //TODO Item may be sold in one store but not in another (where count will be 0)
 
     private void checkAllProductsAreSold(List<SDMItem> collection) {
         List<SDMStore> stores = descriptor.getSDMStores().getSDMStore();
@@ -71,7 +77,18 @@ public class FileValidator {
         if(!checkStoreCoordinates(storesCollection)) { throw new LocationOutOfBoundsException("Locations are not within maps range in file"); }
         checkAllStoresPointToExistingProducts(storesCollection); //Throws exception if there are issues
         checkProductIsSoldOnceInStore(storesCollection); //Throws exception if there are issues
+        //checkDiscountDefinitions(storesCollection);
         return true;
+    }
+
+    //TODO finish this
+    private void checkDiscountDefinitions(List<SDMStore> storesCollection) {
+        SDMDiscounts discounts;
+
+        for (SDMStore store : storesCollection) {
+            discounts = store.getSDMDiscounts();
+        }
+
     }
 
     private void checkProductIsSoldOnceInStore(List<SDMStore> storesCollection) {
@@ -94,19 +111,6 @@ public class FileValidator {
                 .count();
         return size == 0;
     }
-/*
-    private boolean checkDuplicateIds(List<T> collection) {
-        int count = (int) collection.stream()
-                .map(T::getId)
-                .count();
-        int distinctCount = (int) collection.stream()
-                .map(T::getId)
-                .distinct()
-                .count();
-
-        return count == distinctCount;
-    }
- */
 
     private boolean checkStoreIds(List<SDMStore> sdmStores) {
         int count = (int) sdmStores.stream()
@@ -114,6 +118,18 @@ public class FileValidator {
                 .count();
         int distinctCount = (int) sdmStores.stream()
                 .map(SDMStore::getId)
+                .distinct()
+                .count();
+
+        return count == distinctCount;
+    }
+
+    private boolean checkCustomerIds(List<SDMCustomer> sdmCustomers) {
+        int count = (int) sdmCustomers.stream()
+                .map(SDMCustomer::getId)
+                .count();
+        int distinctCount = (int) sdmCustomers.stream()
+                .map(SDMCustomer::getId)
                 .distinct()
                 .count();
 

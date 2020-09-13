@@ -14,8 +14,8 @@ public class MainMenuImpl implements Menu {
     private boolean isChoiceValid;
     public static List<MenuItem> mainMenu = new ArrayList<>();
     private static final Scanner SCANNER = new Scanner(System.in);
-    private final EngineManagerSingleton systemManager = EngineManagerSingleton.getInstance();
-    private final VendorManagerSingleton vendorManager = VendorManagerSingleton.getInstance();
+    private final EngineManagerSingleton engineManager = EngineManagerSingleton.getInstance();
+    private final StoreManagerSingleton vendorManager = StoreManagerSingleton.getInstance();
 
     public MainMenuImpl() {
         initMenu();
@@ -23,7 +23,7 @@ public class MainMenuImpl implements Menu {
 
     public void initMenu() {
         mainMenu.add(new ReadFileXml());
-        mainMenu.add(new ShowVendorsInfo());
+        mainMenu.add(new ShowStoreInfo());
         mainMenu.add(new ShowProductsInfo());
         mainMenu.add(new MakePurchase());
         mainMenu.add(new ShowPurchaseHistory());
@@ -58,7 +58,7 @@ public class MainMenuImpl implements Menu {
             int lowerLimit = 1;
 
             if (checkIfWithinBounds(choice, lowerLimit, upperLimit)) {
-                if (systemManager.getIsFileLoaded()) {
+                if (engineManager.getIsFileLoaded()) {
                     isChoiceValid = true;
                 } else {
                     continueForNotLoadedFile(choice, lowerLimit, upperLimit);
@@ -92,27 +92,27 @@ public class MainMenuImpl implements Menu {
         switch (userChoice) {
             case 1:
                 System.out.println("Please enter file's path");
-                systemManager.setFilePath(SCANNER.nextLine());
-                System.out.println(mainMenu.get(userChoice - 1).execute(systemManager));
+                engineManager.setFilePath(SCANNER.nextLine());
+                System.out.println(mainMenu.get(userChoice - 1).execute(engineManager));
                 break;
             case 2:
                 ArrayList<Map<String, Object>> vendors =
-                        (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).execute(systemManager);
+                        (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).execute(engineManager);
                 System.out.println(getVendorListString(vendors));
                 break;
             case 3:ArrayList<Map<String, Object>> products =
-                    (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).execute(systemManager);
+                    (ArrayList<Map<String, Object>>) mainMenu.get(userChoice - 1).execute(engineManager);
                 System.out.println(getProductsString(products));
                 break;
             case 4:
                 handleMakeOrder();
                 break;
             case 5:
-                System.out.println(mainMenu.get(userChoice - 1).execute(systemManager));
+                System.out.println(mainMenu.get(userChoice - 1).execute(engineManager));
                 break;
             case 6:
                 ConsoleUIRunner.isRunning = false;
-                System.out.println(mainMenu.get(userChoice - 1).execute(systemManager));
+                System.out.println(mainMenu.get(userChoice - 1).execute(engineManager));
             default:
                 break;
         }
@@ -120,7 +120,7 @@ public class MainMenuImpl implements Menu {
 
     private void handleMakeOrder() {
         int choice = showStoresAndPick();
-        if (checkIfWithinBounds(choice, 1, systemManager.getVendorManager().getVendorsInfo().size())) {
+        if (checkIfWithinBounds(choice, 1, engineManager.getVendorManager().getVendorsInfo().size())) {
             startOrder(vendorManager.getVendorsInfo().get(choice - 1));
         } else {
             System.out.println("Please pick an number within range of available stores.");
@@ -156,7 +156,7 @@ public class MainMenuImpl implements Menu {
             while (!str.equals("y") && !str.equals(("n"))) {
                 str = SCANNER.nextLine();
                 if (str.equals("y")) {
-                    systemManager.getOrderManager().addOrder(order);
+                    engineManager.getOrderManager().addOrder(order);
                     System.out.println("Your order has been registered in the system");
                 } else if (str.equals("n")) {
                     System.out.println("Your order has been dropped");
@@ -178,7 +178,7 @@ public class MainMenuImpl implements Menu {
                 try {
                     int id = Integer.parseInt(input);
                     if(products.containsKey(id)) {
-                        Product product = systemManager.getProduct(id);
+                        Product product = engineManager.getProduct(id);
 
                         System.out.println("Choose the amount of the requested product: For quantity specify number of units and for Weight specify the weight in kilos");
                         double amount = readAmountFromUser(product);
@@ -219,7 +219,7 @@ public class MainMenuImpl implements Menu {
             System.out.println("Please enter coordinate Y (Value between 1-50)");
             int y = Integer.parseInt(SCANNER.nextLine());
             Location target = new Location(x, y);
-            if(!systemManager.getVendorManager().isLocationExist(target)) {
+            if(!engineManager.getVendorManager().isLocationExist(target)) {
                 order.setTargetLocation(target);
                 result = true;
             } else {
@@ -330,7 +330,7 @@ public class MainMenuImpl implements Menu {
 
     private int showStoresAndPick() {
         int index = 1;
-        VendorManagerSingleton vendorManager = VendorManagerSingleton.getInstance();
+        StoreManagerSingleton vendorManager = StoreManagerSingleton.getInstance();
         ArrayList<Map<String, Object>> vendors = vendorManager.getVendorsInfo();
         System.out.println("Please choose the store you would like to make a purchase from:");
         for (Map<String, Object> vendor : vendors) {

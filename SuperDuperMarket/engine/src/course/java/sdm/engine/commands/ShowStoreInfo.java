@@ -1,9 +1,9 @@
 package course.java.sdm.engine.commands;
 
 import course.java.sdm.engine.managers.EngineManagerSingleton;
-import course.java.sdm.engine.managers.VendorManagerSingleton;
+import course.java.sdm.engine.managers.StoreManagerSingleton;
 
-public class ShowVendorsInfo implements MenuItem {
+public class ShowStoreInfo implements MenuItem {
 
     @Override
     public String showMe() {
@@ -12,6 +12,6 @@ public class ShowVendorsInfo implements MenuItem {
 
     @Override
     public Object execute(EngineManagerSingleton systemManager) {
-        return VendorManagerSingleton.getInstance().getVendorsInfo();
+        return StoreManagerSingleton.getInstance().getVendorsInfo();
     }
 }

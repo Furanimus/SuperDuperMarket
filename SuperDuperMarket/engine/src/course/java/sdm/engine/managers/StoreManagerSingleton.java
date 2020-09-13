@@ -6,12 +6,12 @@ import course.java.sdm.engine.exceptions.LocationAlreadyRegisteredException;
 import java.util.*;
 
 //TODO Singleton
-    public class VendorManagerSingleton {
-        private static VendorManagerSingleton instance = null;
+    public class StoreManagerSingleton {
+        private static StoreManagerSingleton instance = null;
         private Map<Integer, Vendor> idToVendor;
         private LocationsMatrix locationsMatrix;
 
-        private VendorManagerSingleton() {
+        private StoreManagerSingleton() {
             idToVendor = new HashMap<>();
             locationsMatrix = new LocationsMatrix();
         }
@@ -20,9 +20,9 @@ import java.util.*;
                 return idToVendor.getOrDefault(id, null);
         }
 
-        public static synchronized VendorManagerSingleton getInstance() {
+        public static synchronized StoreManagerSingleton getInstance() {
             if (instance == null) {
-                instance = new VendorManagerSingleton();
+                instance = new StoreManagerSingleton();
             }
             return instance;
         }

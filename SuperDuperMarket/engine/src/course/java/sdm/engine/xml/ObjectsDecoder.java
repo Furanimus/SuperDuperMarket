@@ -1,7 +1,7 @@
 package course.java.sdm.engine.xml;
 
 import course.java.sdm.engine.managers.EngineManagerSingleton;
-import course.java.sdm.engine.managers.VendorManagerSingleton;
+import course.java.sdm.engine.managers.StoreManagerSingleton;
 import course.java.sdm.engine.entities.Location;
 import course.java.sdm.engine.entities.Product;
 import course.java.sdm.engine.entities.Vendor;
@@ -22,11 +22,11 @@ public class ObjectsDecoder {
     private final String JAXB_XML_PACKAGE_NAME = "course.java.sdm.engine.xml.jaxbobjects";
     private  String xmlPath;
     private EngineManagerSingleton systemManagerInstance;
-    private VendorManagerSingleton vendorManager;
+    private StoreManagerSingleton vendorManager;
 
     public ObjectsDecoder() {
         this.systemManagerInstance = EngineManagerSingleton.getInstance();
-        vendorManager = VendorManagerSingleton.getInstance();
+        vendorManager = StoreManagerSingleton.getInstance();
     }
 
     public void jaxbObjectToMyObject(SuperDuperMarketDescriptor sdmDescriptor) {

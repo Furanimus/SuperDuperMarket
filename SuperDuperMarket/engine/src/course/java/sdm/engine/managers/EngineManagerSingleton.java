@@ -8,7 +8,7 @@ public class EngineManagerSingleton {
     private String filePath;
     private boolean isFileLoaded = false;
     private static EngineManagerSingleton instance = null;
-    private final VendorManagerSingleton vendorManager;
+    private final StoreManagerSingleton vendorManager;
     private final OrderManagerSingleton orderManager;
     private Map<Integer,Product> idToProduct;
 
@@ -26,7 +26,7 @@ public class EngineManagerSingleton {
 
     public OrderManagerSingleton getOrderManager() { return orderManager; }
 
-    public VendorManagerSingleton getVendorManager() {
+    public StoreManagerSingleton getVendorManager() {
         return vendorManager;
     }
 
@@ -35,7 +35,7 @@ public class EngineManagerSingleton {
     }
 
     private EngineManagerSingleton() {
-        vendorManager = VendorManagerSingleton.getInstance();
+        vendorManager = StoreManagerSingleton.getInstance();
         orderManager = OrderManagerSingleton.getInstance();
         idToProduct = new TreeMap<>();
     }
