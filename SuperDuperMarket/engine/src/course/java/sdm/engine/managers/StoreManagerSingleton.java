@@ -8,16 +8,16 @@ import java.util.*;
 //TODO Singleton
     public class StoreManagerSingleton {
         private static StoreManagerSingleton instance = null;
-        private Map<Integer, Vendor> idToVendor;
+        private Map<Integer, Store> idToStore;
         private LocationsMatrix locationsMatrix;
 
         private StoreManagerSingleton() {
-            idToVendor = new HashMap<>();
+            idToStore = new HashMap<>();
             locationsMatrix = new LocationsMatrix();
         }
 
-        public Vendor getVendor(int id) {
-                return idToVendor.getOrDefault(id, null);
+        public Store getVendor(int id) {
+                return idToStore.getOrDefault(id, null);
         }
 
         public static synchronized StoreManagerSingleton getInstance() {
@@ -31,14 +31,14 @@ import java.util.*;
             return locationsMatrix.getLocation(toInsert.getX(), toInsert.getY());
         }
 
-        public void addVendor(Vendor toAdd) {
+        public void addVendor(Store toAdd) {
             int x = toAdd.getLocation().getX();
             int y =toAdd.getLocation().getY();
             if(isLocationExist(toAdd.getLocation())) {
                 throw new LocationAlreadyRegisteredException(String.format("Vendor already exists this location: (%d,%d)", x, y));
             } else {
                 locationsMatrix.addLocation(x, y);
-                idToVendor.put(toAdd.getId(), toAdd);
+                idToStore.put(toAdd.getId(), toAdd);
             }
         }
 
@@ -49,12 +49,22 @@ import java.util.*;
             return sb.toString();
         }
 
+        public List<Product> getStoreProductSoldIn(int productId) {
+            List<Product> result = new ArrayList<>();
+            for (Store store : idToStore.values()) {
+                if (store.isSellItem(productId)) {
+                    result.add(store.getProduct(productId));
+                }
+            }
+            return result;
+        }
+
         public double averageProductPrice(int id) {
             double sum = 0;
             int numOfStoresThatSellTheItem = howManyVendorsSellItem(id);
-            for (Vendor vendor : idToVendor.values()) {
-                if (vendor.isSellItem(id)) {
-                    sum+= vendor.getPrice(id);
+            for (Store store : idToStore.values()) {
+                if (store.isSellItem(id)) {
+                    sum+= store.getPrice(id);
                 }
             }
             return sum / numOfStoresThatSellTheItem;
@@ -62,8 +72,8 @@ import java.util.*;
 
         public int howManyVendorsSellItem(int productId) {
                 int result = 0;
-                for (Vendor vendor : idToVendor.values()) {
-                    if (vendor.isSellItem(productId)) {
+                for (Store store : idToStore.values()) {
+                    if (store.isSellItem(productId)) {
                         result++;
                     }
                 }
@@ -72,14 +82,14 @@ import java.util.*;
 
         public ArrayList<Map<String, Object>> getVendorsInfo() {
             ArrayList<Map<String, Object>> result = new ArrayList<>();
-            for (Vendor vendor : idToVendor.values()) {
+            for (Store store : idToStore.values()) {
                 Map<String, Object> vendorInfo = new TreeMap<>();
-                vendorInfo.put("Id",vendor.getId());
-                vendorInfo.put("Name",vendor.getName());
-                vendorInfo.put("Products", getVendorProductsInfo(vendor));
-                vendorInfo.put("PPK",vendor.getPPK());
+                vendorInfo.put("Id", store.getId());
+                vendorInfo.put("Name", store.getName());
+                vendorInfo.put("Products", getVendorProductsInfo(store));
+                vendorInfo.put("PPK", store.getPPK());
 
-                List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByVendorId(vendor.getId());
+                List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByVendorId(store.getId());
                 vendorInfo.put("Past Orders",orders);
                 double totalProducts = 0;
                 int summedDeliveryPrice = 0;
@@ -95,10 +105,10 @@ import java.util.*;
             return result;
         }
 
-        public  Map<Integer, Object> getVendorProductsInfo(Vendor vendor) {
+        public  Map<Integer, Object> getVendorProductsInfo(Store store) {
             Map<Integer, Object> products = new TreeMap<>();
-            Map<Integer, Product> allProducts = EngineManagerSingleton.getInstance().getProductsMap();
-            Map<Integer, Integer> prices = vendor.getIdToPrice();
+            Map<Integer, SmartProduct> allProducts = EngineManagerSingleton.getInstance().getProductsMap();
+            Map<Integer, Integer> prices = store.getIdToPrice();
 
             for (int productId : prices.keySet()) {
                 Product product = allProducts.get(productId);
@@ -107,14 +117,18 @@ import java.util.*;
                 currentProduct.put("Name",product.getName());
                 currentProduct.put("Purchase Category", product.getPurchaseCategory());
                 currentProduct.put("Price", prices.get(productId));
-                currentProduct.put("Time Sold", OrderManagerSingleton.getInstance().howMuchProductWasSold(productId,vendor.getId()));
+                currentProduct.put("Time Sold", OrderManagerSingleton.getInstance().howMuchProductWasSold(productId, store.getId()));
                 products.put(productId, currentProduct);
             }
             return products;
         }
 
         public void resetData() {
-            idToVendor = new TreeMap<>();
+            idToStore = new TreeMap<>();
             locationsMatrix.reset();
         }
+
+    public ArrayList<Store> getStoresList() {
+        return new ArrayList<>(idToStore.values());
+    }
 }

@@ -128,16 +128,16 @@ public class MainMenuImpl implements Menu {
     }
 
     private void startOrder(Map<String, Object> vendorInfo) {
-        Vendor vendor = vendorManager.getVendor((int) vendorInfo.get("Id"));
-        if (vendor != null) {
-            Order order = new Order(vendor);
+        Store store = vendorManager.getVendor((int) vendorInfo.get("Id"));
+        if (store != null) {
+            Order order = new Order(store);
             do {
                 System.out.println("Please enter the date you wish the order will arrive (Please use the following format: " + Order.getDATE_FORMAT());
             } while(!readDate(order));
             do {
                 System.out.println("The system will now read the location to which the order will be sent on a map of 50 X 50 in the following format (x, y)");
             } while(!readLocation(order));
-            collectOrderItems(order, vendor);
+            collectOrderItems(order, store);
             prepareOrderToFinish(order);
         } else {
             System.out.println("Store does not exist");
@@ -167,9 +167,9 @@ public class MainMenuImpl implements Menu {
         }
     }
 
-    private void collectOrderItems(Order order, Vendor vendor) {
+    private void collectOrderItems(Order order, Store store) {
         String input;
-        Map<Integer, Product> products = vendor.getProductsMap();
+        Map<Integer, Product> products = store.getProductsMap();
         do {
             printProducts(products);
             System.out.println("Please enter the item ID you would like to add to the cart. If you are done with the order, press q to finish.");

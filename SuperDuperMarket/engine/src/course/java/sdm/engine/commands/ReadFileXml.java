@@ -20,8 +20,8 @@ public class ReadFileXml implements MenuItem {
     }
 
     @Override
-    public Object execute(EngineManagerSingleton systemManager) {
-        String path = systemManager.getFilePath();
+    public Object execute(EngineManagerSingleton engineManager) {
+        String path = engineManager.getFilePath();
         try {
             File file = new File(path);
             if (fileValidator.validateExistence(file)) {
@@ -30,22 +30,28 @@ public class ReadFileXml implements MenuItem {
                     if (fileValidator.validateAppWise(sdmDescriptor)) {
                         copyFromXml(sdmDescriptor);
                         msg = "File loaded successfully";
-                        if (!systemManager.getIsFileLoaded()) {
-                            systemManager.fileLoaded();
+                        engineManager.setLastFileLoadedSuccessfully(true);
+                        if (!engineManager.getIsFileLoaded()) {
+                            engineManager.fileLoaded();
                         }
                     }
                 }
             }
         } catch (LocationOutOfBoundsException e){
             msg = "There is a location in file that is not within range of coordinates map";
+            engineManager.setLastFileLoadedSuccessfully(false);
         } catch(FileNotFoundException ex) {
             msg = "File was not found. Please enter a valid path to file. ";
+            engineManager.setLastFileLoadedSuccessfully(false);
         } catch (IOException e) {
             msg = "IO exception:" + e.getMessage();
+            engineManager.setLastFileLoadedSuccessfully(false);
         } catch(JAXBException ex) {
             msg = "JAXB Exception:" + ex.getMessage();
+            engineManager.setLastFileLoadedSuccessfully(false);
         } catch(Exception ex) {
             msg = ex.getMessage();
+            engineManager.setLastFileLoadedSuccessfully(false);
         }
         return msg;
     }

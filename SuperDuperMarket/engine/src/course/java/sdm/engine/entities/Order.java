@@ -5,6 +5,7 @@ import course.java.sdm.engine.utils.MyUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Order {
@@ -14,7 +15,7 @@ public class Order {
     private final int MONTHS = 12;
     private final int HOURS = 24;
     private final int MINUTES = 60;
-    //private Customer orderingCustomer;
+    private int orderingCustomerId;
     private static int orderIdTracker;
     private int orderId;
     private double totalPrice;
@@ -22,10 +23,15 @@ public class Order {
     private double totalProductsPrice;
     private Date date;
     private Map<Integer, Double> productIdToAmount = new HashMap<>();
-    private Vendor whereFrom;
+    private Store whereFrom;
 
-    public Order(Vendor whereFrom) {
+    public Order() {
+        orderId = orderIdTracker++;
+    }
+
+    public Order(int orderingCustomerId, Store whereFrom, LocalDate date) {
         this.whereFrom = whereFrom;
+        this.orderingCustomerId = orderingCustomerId;
         orderId = orderIdTracker++;
     }
 
@@ -35,10 +41,6 @@ public class Order {
 
     public double getTotalPrice() {
         return totalPrice;
-    }
-
-    public DateFormat getDF() {
-        return DF;
     }
 
     public double getDeliveryCost() {
@@ -53,12 +55,11 @@ public class Order {
         deliveryCost = whereFrom.getPPK() * targetLocation.measureDistance(whereFrom.getLocation());
     }
 
-    public void setTotalProductsPrice() {
+    public void setTotalProductsPrice() { //values from the
         for (Product product : whereFrom.getProductsMap().values()) {
             totalProductsPrice += product.getPrice() * getProductAmount(product.getId());
         }
     }
-
 
     public Date getDate() {
         return date;
@@ -90,11 +91,7 @@ public class Order {
         this.targetLocation = targetLocation;
     }
 
-    public Order() {
-        orderId = orderIdTracker++;
-    }
-
-    public Vendor getWhereFrom() {
+    public Store getWhereFrom() {
         return whereFrom;
     }
 
@@ -199,7 +196,6 @@ public class Order {
             if (product.getPurchaseCategory().equals("Weight")) {
                 productIdToAmount.put(productId, 1.0);
             }
-
         }
     }
 }

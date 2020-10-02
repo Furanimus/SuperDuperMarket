@@ -7,13 +7,21 @@ import java.util.*;
 public class EngineManagerSingleton {
     private String filePath;
     private boolean isFileLoaded = false;
+    private boolean isLastFileLoadedSuccessfully = false;
     private static EngineManagerSingleton instance = null;
     private final StoreManagerSingleton vendorManager;
     private final OrderManagerSingleton orderManager;
-    private Map<Integer,Product> idToProduct;
+    private final ProductManagerSingleton productManager;
+    private final CustomerManagerSingleton customerManager;
+
+    private Map<Integer,SmartProduct> idToProduct;
 
     public boolean getIsFileLoaded() {
         return isFileLoaded;
+    }
+
+    public void setLastFileLoadedSuccessfully(boolean lastFileLoadedSuccessfully) {
+        isLastFileLoadedSuccessfully = lastFileLoadedSuccessfully;
     }
 
     public void fileLoaded() {
@@ -23,6 +31,8 @@ public class EngineManagerSingleton {
     public String getFilePath() {
         return filePath;
     }
+
+    public CustomerManagerSingleton getCustomerManager() { return customerManager; }
 
     public OrderManagerSingleton getOrderManager() { return orderManager; }
 
@@ -34,9 +44,15 @@ public class EngineManagerSingleton {
         filePath = path;
     }
 
+    public ArrayList<SmartProduct> getProductsList() {
+        return new ArrayList<>(idToProduct.values());
+    }
+
     private EngineManagerSingleton() {
         vendorManager = StoreManagerSingleton.getInstance();
         orderManager = OrderManagerSingleton.getInstance();
+        customerManager = CustomerManagerSingleton.getInstance();
+        productManager = ProductManagerSingleton.getInstance();
         idToProduct = new TreeMap<>();
     }
 
@@ -47,7 +63,7 @@ public class EngineManagerSingleton {
         return instance;
     }
 
-    public Map<Integer, Product> getProductsMap() {
+    public Map<Integer, SmartProduct> getProductsMap() {
         return idToProduct;
     }
 
@@ -64,7 +80,6 @@ public class EngineManagerSingleton {
             productInfo.put("Purchase Category",product.getPurchaseCategory());
             productInfo.put("Number Of Stores that Sell the product",vendorManager.howManyVendorsSellItem(product.getId()));
             productInfo.put("Product Average Price",vendorManager.averageProductPrice(product.getId()));
-            //TODO add count how many times the item was sold.
             productInfo.put("Times Sold", orderManager.howMuchProductWasSold(product.getId()));
             result.add(productInfo);
         }
@@ -75,5 +90,15 @@ public class EngineManagerSingleton {
         idToProduct = new TreeMap<>();
         vendorManager.resetData();
         orderManager.reset();
+    }
+
+    public void updateSmartProductsStatistics() {
+        for(SmartProduct product : idToProduct.values()) {
+            product.updateStatistics();
+        }
+    }
+
+    public boolean getIsLastFileLoadedSuccessfully() {
+        return isLastFileLoadedSuccessfully;
     }
 }

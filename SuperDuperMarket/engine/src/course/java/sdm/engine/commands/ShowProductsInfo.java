@@ -9,7 +9,7 @@ public class ShowProductsInfo implements MenuItem {
     }
 
     @Override
-    public Object execute(EngineManagerSingleton systemManager) {
-        return systemManager.getProductsDescriptionAndStatistics();
+    public Object execute(EngineManagerSingleton engineManager) {
+        return engineManager.getProductsDescriptionAndStatistics();
     }
 }

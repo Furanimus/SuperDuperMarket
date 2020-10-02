@@ -1,13 +1,18 @@
 package course.java.sdm.engine.entities;
 import java.util.*;
 
-public class Vendor {
+public class Store implements Locatable {
     private int id;
     private String name;
     private int PPK;
     private Location location;
     private Map<Integer, Integer> idToPrice;
     private Map<Integer, Product> idToProduct;
+    private List<Sale> storeSales;
+
+    public void addSale(Sale sale) {
+        storeSales.add(sale);
+    }
 
     public int getId() {
         return id;
@@ -32,18 +37,19 @@ public class Vendor {
 
     @Override
     public String toString() {
-        return "Store ID: " + id +
-               " | Name: " + name +
-               " | PPK: " + PPK ;
+        return  name +
+               " (" + id +
+               "), PPK: " + PPK ;
     }
 
-    public Vendor (int id, String name, int PPK, Location location) {
+    public Store(int id, String name, int PPK, Location location) {
         this.id = id;
         this.name = name;
         this.PPK = PPK;
         this.location = location;
         idToPrice = new HashMap<>();
         idToProduct = new HashMap<>();
+        storeSales = new ArrayList<>();
     }
 
     public String getName() {

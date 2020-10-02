@@ -1,19 +1,17 @@
 package course.java.sdm.engine.xml;
 
+import course.java.sdm.engine.entities.*;
+import course.java.sdm.engine.entities.Location;
+import course.java.sdm.engine.managers.CustomerManagerSingleton;
 import course.java.sdm.engine.managers.EngineManagerSingleton;
 import course.java.sdm.engine.managers.StoreManagerSingleton;
-import course.java.sdm.engine.entities.Location;
-import course.java.sdm.engine.entities.Product;
-import course.java.sdm.engine.entities.Vendor;
-import course.java.sdm.engine.xml.jaxbobjects.SDMItem;
-import course.java.sdm.engine.xml.jaxbobjects.SDMSell;
-import course.java.sdm.engine.xml.jaxbobjects.SDMStore;
-import course.java.sdm.engine.xml.jaxbobjects.SuperDuperMarketDescriptor;
+import course.java.sdm.engine.xml.jaxbobjects.*;
 
 import javax.xml.bind.*;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class ObjectsDecoder {
 
@@ -23,45 +21,84 @@ public class ObjectsDecoder {
     private  String xmlPath;
     private EngineManagerSingleton systemManagerInstance;
     private StoreManagerSingleton vendorManager;
+    private CustomerManagerSingleton customerManager;
 
     public ObjectsDecoder() {
         this.systemManagerInstance = EngineManagerSingleton.getInstance();
         vendorManager = StoreManagerSingleton.getInstance();
+        customerManager = CustomerManagerSingleton.getInstance();
     }
 
     public void jaxbObjectToMyObject(SuperDuperMarketDescriptor sdmDescriptor) {
         xmlPath = systemManagerInstance.getFilePath();
-        File file = new File(xmlPath);
-        try {
-            copyFromJAXB(systemManagerInstance, sdmDescriptor);
-        } catch (Exception e) {
-            System.out.println("failed to copy SDMDescriptor"); //TODO fix to be more flexible
-        }
+        copyFromJAXB(systemManagerInstance, sdmDescriptor);
     }
 
     private void copyFromJAXB(EngineManagerSingleton systemManagerInstance, SuperDuperMarketDescriptor descriptor) {
         List<SDMItem> readItems = descriptor.getSDMItems().getSDMItem();
         List<SDMStore> readStores = descriptor.getSDMStores().getSDMStore();
+        List<SDMCustomer> readCustomers = descriptor.getSDMCustomers().getSDMCustomer();
         systemManagerInstance.resetData();
         copyItems(systemManagerInstance.getProductsMap(), readItems);
         copyStores(readStores);
+        copyCustomers(readCustomers);
+    }
+
+    private void copyCustomers(List<SDMCustomer> readCustomers) {
+        Map<Integer, Customer> newIdToCustomer = new TreeMap<>();
+        for (SDMCustomer customer : readCustomers) {
+            Location newLocation = new Location(customer.getLocation().getX(), customer.getLocation().getY());
+            Customer customerToAdd = new Customer(customer.getId(), customer.getName(), newLocation);
+            newIdToCustomer.put(customer.getId(), customerToAdd);
+            //customerManager.addCustomer(customerToAdd);
+        }
+        customerManager.setIdToCustomer(newIdToCustomer);
+
     }
 
     private void copyStores(List<SDMStore> storeList) {
-        Map<Integer,Product> productMap = systemManagerInstance.getProductsMap();
+        Map<Integer,SmartProduct> productMap = systemManagerInstance.getProductsMap();
         for(SDMStore store : storeList) {
             Location newLocation = new Location(store.getLocation().getX(), store.getLocation().getY());
-            Vendor vendorToAdd = new Vendor(store.getId(), store.getName(), store.getDeliveryPpk(), newLocation);
+            Store storeToAdd = new Store(store.getId(), store.getName(), store.getDeliveryPpk(), newLocation);
             for(SDMSell sdmSell : store.getSDMPrices().getSDMSell()) {
-                vendorToAdd.addProduct(productMap.get(sdmSell.getItemId()), sdmSell.getPrice());
+                storeToAdd.addProduct(productMap.get(sdmSell.getItemId()), sdmSell.getPrice());
             }
-            vendorManager.addVendor(vendorToAdd);
+            copyStoreSales(storeToAdd, store);
+            vendorManager.addVendor(storeToAdd);
         }
     }
 
-    private void copyItems(Map<Integer, Product> productsMap, List<SDMItem> itemList) {
+    private void copyStoreSales(Store storeToAdd, SDMStore source) {
+        if (source.getSDMDiscounts() != null) {
+            List<SDMDiscount> discounts = source.getSDMDiscounts().getSDMDiscount();
+            if (discounts != null) {
+                for (SDMDiscount discount : discounts) {
+                    Sale newSale = createSaleType(discount.getThenYouGet().getOperator());
+                    newSale.setProductYouNeedToAmountYouNeed(discount.getIfYouBuy().getItemId(), discount.getIfYouBuy().getQuantity());
+                    List<SDMOffer> offers = discount.getThenYouGet().getSDMOffer();
+                    for(SDMOffer offer : offers) {
+                        newSale.addItemToSale(offer.getItemId(), offer.getQuantity(), offer.getForAdditional());
+                    }
+                    storeToAdd.addSale(newSale);
+                }
+            }
+        }
+    }
+
+    private Sale createSaleType(String operator) {
+        Sale sale;
+        if(operator.equals("ALL-OR-NOTHING")) {
+            sale = new AllOfSale();
+        } else {
+            sale = new OneOfSale();
+        }
+        return sale;
+    }
+
+    private void copyItems(Map<Integer, SmartProduct> productsMap, List<SDMItem> itemList) {
         for(SDMItem item : itemList) {
-            productsMap.put(item.getId(), new Product(item.getId(),
+            productsMap.put(item.getId(), new SmartProduct(item.getId(),
                     item.getName(),
                     item.getPurchaseCategory()));
         }

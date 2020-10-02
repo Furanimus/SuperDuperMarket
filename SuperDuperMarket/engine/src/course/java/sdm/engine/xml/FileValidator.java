@@ -23,14 +23,14 @@ public class FileValidator {
 
     private boolean testSDMCustomers(SDMCustomers sdmCustomers) {
         List<SDMCustomer> customersCollection = sdmCustomers.getSDMCustomer();
-        if (!checkCustomerIds(customersCollection)) { throw new DuplicateItemIdsException("There are duplicate ids for customers in file."); }
+        if (!checkCustomerIds(customersCollection)) { throw new DuplicateItemIdsException("File failed to load.\nThere are duplicate ids for customers in file."); }
 
         return true;
     }
 
     private boolean testSDMItems(SDMItems sdmItems) {
         List<SDMItem> productsCollection = sdmItems.getSDMItem();
-        if (!testSDMItemsIds(productsCollection)) { throw new DuplicateItemIdsException("There are duplicate ids for products in file."); }
+        if (!testSDMItemsIds(productsCollection)) { throw new DuplicateItemIdsException("File failed to load.\nThere are duplicate ids for products in file."); }
         checkAllProductsAreSold(productsCollection); //Throws exception if there are issues
         return true;
     }

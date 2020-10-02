@@ -11,9 +11,14 @@ import java.util.TreeMap;
 
 public class OrderManagerSingleton {
     private static OrderManagerSingleton instance;
-    private Map<Integer, Order> idToOrder = new TreeMap<>();
+    private Map<Integer, Order> idToOrder;
 
-    private  OrderManagerSingleton() {
+    public Map<Integer, Order> getIdToOrder() {
+        return idToOrder;
+    }
+
+    private OrderManagerSingleton() {
+        idToOrder = new TreeMap<>();
     }
 
     public synchronized static OrderManagerSingleton getInstance() {
@@ -53,6 +58,10 @@ public class OrderManagerSingleton {
             }
         }
         return result;
+    }
+
+    public void createDynamicOrder(Map<Integer, Double> productIdToAmount) {
+
     }
 
     public String getAllOrdersStr() {
