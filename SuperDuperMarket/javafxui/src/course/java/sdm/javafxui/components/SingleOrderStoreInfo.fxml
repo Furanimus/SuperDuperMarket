@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="course.java.sdm.javafxui.components.SingleOrderStoreInfoController">
+   <content>
+      <GridPane>
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+            <ColumnConstraints hgrow="NEVER" maxWidth="59.0" minWidth="41.0" prefWidth="41.0" />
+            <ColumnConstraints hgrow="NEVER" maxWidth="371.0" minWidth="37.0" prefWidth="37.0" />
+            <ColumnConstraints hgrow="NEVER" maxWidth="371.0" minWidth="37.0" prefWidth="68.0" />
+          <ColumnConstraints hgrow="NEVER" maxWidth="358.0" minWidth="44.0" prefWidth="57.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="358.0" minWidth="10.0" prefWidth="80.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="358.0" minWidth="0.0" prefWidth="168.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="358.0" minWidth="10.0" prefWidth="131.0" />
+          <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Id:" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </Label>
+            <Label text="Name:" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </Label>
+            <Label text="PPK:" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </Label>
+            <Label text="Distance From Customer:" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4">
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </Label>
+            <Label fx:id="idInfo" text="idInfo" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="nameInfo" text="nameInfo" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="ppkInfo" text="ppkInfo" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label fx:id="distanceFromCustomerInfo" text="distanceFromCustomerInfo" GridPane.columnIndex="4" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
+            </Label>
+            <Label text="Delivery Cost:" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="5" />
+            <Label fx:id="deliveryCostInfo" text="deliveryCostInfo" GridPane.columnIndex="3" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </Label>
+            <Label text="Products Bought:" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+            <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="2147483647">
+              <columns>
+                <TableColumn prefWidth="75.0" text="C1" />
+                <TableColumn prefWidth="75.0" text="C2" />
+              </columns>
+            </TableView>
+         </children>
+      </GridPane>
+   </content>
+</ScrollPane>
