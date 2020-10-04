@@ -6,7 +6,6 @@ public class Product {
     protected int id ;
     protected String name;
     protected String purchaseCategory;
-    protected double avgPrice = 7.0;
     private int price = -1;
 
     public Product(int id, String name, String purchaseCategory) {

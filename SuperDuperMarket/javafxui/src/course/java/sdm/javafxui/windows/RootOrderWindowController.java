@@ -1,8 +1,9 @@
-package course.java.sdm.javafxui;
+package course.java.sdm.javafxui.windows;
 import course.java.sdm.engine.entities.Customer;
 import course.java.sdm.engine.entities.Order;
 import course.java.sdm.engine.entities.Store;
 import course.java.sdm.engine.managers.*;
+import course.java.sdm.javafxui.FXMLRunner;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,17 +12,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ComboBox;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderWindowController {
-
+public class RootOrderWindowController {
+    public final String PLACE_ORDER_FXML = "windows/PlaceOrderWindow.fxml";
     @FXML private Button proceedToShopBtn;
     @FXML private ComboBox<Customer> chooseCustomerComboBox;
     @FXML private ListView<Store> storesListView;
@@ -66,16 +66,21 @@ public class OrderWindowController {
     @FXML
     void proceedToShopBtn_Clicked(ActionEvent event) {
         try {
+            Order order;
             validateFields();
             if (dynamicOrderCheckBox.isSelected()) {
+                order = new Order(chooseCustomerComboBox.getValue().getId()
+                        , orderDatePicker.getValue());
 
             } else {
-                Order order = new Order(chooseCustomerComboBox.getValue().getId()
+                order = new Order(chooseCustomerComboBox.getValue().getId()
                         , storesListView.getSelectionModel().getSelectedItem()
                         , orderDatePicker.getValue());
-                beginOrder(order);
-
             }
+            order.setIsDynamic(dynamicOrderCheckBox.isSelected());
+            order.setCustomerId(chooseCustomerComboBox.getSelectionModel().getSelectedItem().getId());
+            order.setTargetLocation(customerManager.getCustomer(order.getOrderingCustomerId()).getLocation());
+            createOrderWindow(order);
             //continue
         }
         catch (Exception e) {
@@ -85,13 +90,26 @@ public class OrderWindowController {
         }
     }
 
-    private void beginOrder(Order order) throws IOException {
+    private void createOrderWindow(Order order) throws IOException {
         Stage orderWindow = new Stage();
+        FXMLLoader loader = new FXMLLoader();
+        URL url = getClass().getResource(FXMLRunner.FXML_PATH + PLACE_ORDER_FXML);
+        loader.setLocation(url);
+        ScrollPane rootContainer = loader.load();
+        PlaceOrderWindowController controller = loader.getController();
         orderWindow.initModality(Modality.APPLICATION_MODAL);
-        GridPane rootContainer = FXMLLoader.load(getClass().getResource("PlaceOrderWindow.fxml"));
+        if (order.getIsDynamic()) {
+            orderWindow.setTitle("Dynamic Order");
+        } else {
+            orderWindow.setTitle(order.getWhereFrom().get(0).getName());
+        }
+        controller.initialSetup(order);
+
         orderWindow.setScene(new Scene(rootContainer));
         orderWindow.show();
     }
+
+
 
     private boolean validateFields() {
         boolean result = false;

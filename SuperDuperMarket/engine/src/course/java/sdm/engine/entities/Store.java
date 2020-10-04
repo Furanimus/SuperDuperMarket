@@ -22,6 +22,8 @@ public class Store implements Locatable {
         return idToPrice;
     }
 
+    public ArrayList<Product> getProductsList() { return new ArrayList<>(idToProduct.values()); }
+
     public boolean isSellItem(int id) {
         return idToPrice.containsKey(id);
     }

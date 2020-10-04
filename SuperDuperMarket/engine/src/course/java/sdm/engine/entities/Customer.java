@@ -17,8 +17,24 @@ public class Customer implements Locatable {
 
     private Map<Integer, Order> idToOrderCustomerMade;
     private int numOfOrders;
-    private int avgOrderPriceWithoutDelivery;
-    private int avgDeliveryPrice;
+    private double avgOrderPriceWithoutDelivery;
+    private double avgDeliveryPrice;
+
+    public String getLocationStr() {
+        return locationStr;
+    }
+
+    public int getNumOfOrders() {
+        return numOfOrders;
+    }
+
+    public double getAvgOrderPriceWithoutDelivery() {
+        return avgOrderPriceWithoutDelivery;
+    }
+
+    public double getAvgDeliveryPrice() {
+        return avgDeliveryPrice;
+    }
 
     public void setLocation(Location location) {
         this.location = location;
@@ -81,7 +97,15 @@ public class Customer implements Locatable {
             idToOrderCustomerMade = new TreeMap<>();
         }
         idToOrderCustomerMade.put(orderToAdd.getId(), orderToAdd);
+        updateOrderStatistics();
+        avgDeliveryPrice = avgPriceCalculator(Order::getDeliveryCost);
+        avgOrderPriceWithoutDelivery = avgPriceCalculator(Order::getTotalProductsPrice);
+
+    }
+
+    private void updateOrderStatistics() {
         numOfOrders = idToOrderCustomerMade.size();
+
     }
 
     public String getName() {

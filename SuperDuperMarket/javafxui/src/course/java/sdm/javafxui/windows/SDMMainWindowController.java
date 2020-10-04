@@ -1,8 +1,9 @@
-package course.java.sdm.javafxui;
+package course.java.sdm.javafxui.windows;
 import course.java.sdm.engine.commands.*;
 import course.java.sdm.engine.commands.MenuItem;
 import course.java.sdm.engine.entities.*;
 import course.java.sdm.engine.managers.*;
+import course.java.sdm.javafxui.components.SingleOrderStoreInfoController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,10 +17,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,8 +49,8 @@ public class SDMMainWindowController {
     @FXML private TableColumn<Customer, String> customerNameCol;
     @FXML private TableColumn<Customer, String> customerLocationCol;
     @FXML private TableColumn<Customer, Integer> customerOrdersMadeCol;
-    @FXML private TableColumn<Customer, Double> customerAvgOrderNoDelivery;
-    @FXML private TableColumn<Customer, Double> customerAvgDeliveryPrice;
+    @FXML private TableColumn<Customer, Double> customerAvgOrderNoDeliveryCol;
+    @FXML private TableColumn<Customer, Double> customerAvgDeliveryPriceCol;
 
     //Product TableView
     @FXML private TableView<SmartProduct> productsTableView;
@@ -143,18 +146,17 @@ public class SDMMainWindowController {
         mainTabView.disableProperty().bind(isFileLoaded.not());
     }
 
-    @FXML
-    void showAvailableProducts(ActionEvent event) {
-        accordionInfo.getPanes().clear();
-
-        ArrayList<Map<String, Object>> productsContainer = engineManager.getProductsDescriptionAndStatistics();
-
-        TitledPane tPane = new TitledPane();
-
-
-//        accordionInfo.getPanes().add(createInfoTile("Hi"));
-//        accordionInfo.getPanes().add(createInfoTile("Bye"));
-//        accordionInfo.getPanes().add(createInfoTile("dani"));
+    @FXML //TODO it's temporary - fix null controller
+    void showAvailableProducts(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        URL url = getClass().getResource("SingleOrderStoreInfo");
+        loader.setLocation(url);
+        SingleOrderStoreInfoController controller = loader.getController();
+        controller.setStore(StoreManagerSingleton.getInstance().getVendor(1));
+        GridPane root = loader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
 
@@ -164,8 +166,7 @@ public class SDMMainWindowController {
 
     @FXML
     void showAvailableStores(ActionEvent event) {
-        accordionInfo.getPanes().clear();
-        System.out.println("Hi");
+
     }
 
     @FXML
@@ -216,7 +217,7 @@ public class SDMMainWindowController {
             productTimesSoldCol.setCellValueFactory(new PropertyValueFactory<>("timesSold"));
 
             productsTableView.setItems(products);
-            products.addAll(engineManager.getProductsList());
+            products.addAll(engineManager.getSmartProductsList());
 
             //productIdCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
             System.out.println("Hi Edan");
@@ -232,6 +233,8 @@ public class SDMMainWindowController {
             customerNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
             customerLocationCol.setCellValueFactory(new PropertyValueFactory<>("locationStr"));
             customerOrdersMadeCol.setCellValueFactory(new PropertyValueFactory<>("numOfOrders"));
+            customerAvgOrderNoDeliveryCol.setCellValueFactory(new PropertyValueFactory<>("avgOrderPriceWithoutDelivery"));
+            customerAvgDeliveryPriceCol.setCellValueFactory(new PropertyValueFactory<>("avgDeliveryPrice"));
 
             customerTableView.setItems(customers);
             customers.addAll(customerManager.getCustomerList());

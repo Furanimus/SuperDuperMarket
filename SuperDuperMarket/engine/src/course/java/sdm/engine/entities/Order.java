@@ -1,37 +1,42 @@
 package course.java.sdm.engine.entities;
 
 import course.java.sdm.engine.managers.EngineManagerSingleton;
-import course.java.sdm.engine.utils.MyUtils;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 
 public class Order {
-    public final DateFormat DF = new SimpleDateFormat(DATE_FORMAT);
-    private static final String DATE_FORMAT = "dd/mm-hh:mm";
-    private final int DAYS = 31;
-    private final int MONTHS = 12;
-    private final int HOURS = 24;
-    private final int MINUTES = 60;
+
+    private Map<Integer, Double> productIdToAmount = new HashMap<>();
+    private Map<Integer, Store> whereFrom = new HashMap<>();
+
     private int orderingCustomerId;
     private static int orderIdTracker;
     private int orderId;
     private double totalPrice;
     private double deliveryCost;
     private double totalProductsPrice;
-    private Date date;
-    private Map<Integer, Double> productIdToAmount = new HashMap<>();
-    private Store whereFrom;
+    private Location targetLocation;
+    private boolean isDynamic;
+    private LocalDate localDate;
+
+    public void setIsDynamic(boolean isDynamic) {
+        this.isDynamic = isDynamic;
+    }
 
     public Order() {
         orderId = orderIdTracker++;
     }
 
-    public Order(int orderingCustomerId, Store whereFrom, LocalDate date) {
-        this.whereFrom = whereFrom;
+    public Order(int orderingCustomerId, LocalDate date) {
         this.orderingCustomerId = orderingCustomerId;
+        orderId = orderIdTracker++;
+        localDate = date;
+    }
+
+    public Order(int orderingCustomerId, Store whereFrom, LocalDate date) {
+        this.whereFrom.put(whereFrom.getId(), whereFrom);
+        this.orderingCustomerId = orderingCustomerId;
+        this.localDate = date;
         orderId = orderIdTracker++;
     }
 
@@ -51,18 +56,31 @@ public class Order {
         return totalProductsPrice;
     }
 
-    public void setDeliveryCost() {
-        deliveryCost = whereFrom.getPPK() * targetLocation.measureDistance(whereFrom.getLocation());
+    public int getOrderingCustomerId() {
+        return orderingCustomerId;
     }
 
-    public void setTotalProductsPrice() { //values from the
-        for (Product product : whereFrom.getProductsMap().values()) {
-            totalProductsPrice += product.getPrice() * getProductAmount(product.getId());
+    public Location getTargetLocation() {
+        return targetLocation;
+    }
+
+    public void setDeliveryCost() {
+        deliveryCost = whereFrom.values().stream()
+                .mapToDouble(store -> targetLocation.measureDistance(store.getLocation()) * store.getPPK())
+                .sum();
+        //deliveryCost = whereFrom.getPPK() * targetLocation.measureDistance(whereFrom.getLocation());
+    }
+
+    public void setTotalProductsPrice() {
+        for (Store store : whereFrom.values()) {
+            for (Product product : store.getProductsMap().values()) {
+                totalProductsPrice += product.getPrice() * getProductAmount(product.getId());
+            }
         }
     }
 
-    public Date getDate() {
-        return date;
+    public LocalDate getLocalDate() {
+        return localDate;
     }
 
     public int  getId() {
@@ -85,65 +103,19 @@ public class Order {
         return totalCount;
     }
 
-    private Location targetLocation;
-
     public void setTargetLocation(Location targetLocation) {
         this.targetLocation = targetLocation;
     }
 
-    public Store getWhereFrom() {
-        return whereFrom;
-    }
-
-    public boolean dateChecker(String date) throws Exception, NumberFormatException {
-        boolean result = true;
-        if(date.matches("\\d{2}/\\d{2}-\\d{2}:\\d{2}")){
-            String[] tokens = date.split(":|/|-");
-            int[] ints = new int[tokens.length];
-            try {
-                for (int i = 0; i < tokens.length; i++) {
-                    ints[i] = Integer.parseInt(tokens[i]);
-                }
-            } catch (NumberFormatException e) {
-                result = false;
-            }
-            if (result) {
-                if (ints.length != 4) { result = false; }
-                else if (ints[0] > DAYS || ints[0] < 1) { throw new Exception("Days must be between 1-31"); }//result = false; } // TODO Optimize
-                else if (ints[1] > MONTHS || ints[1] < 1) { throw new Exception("Months must be between 1-12"); }//result = false; }
-                else if (ints[2] > HOURS || ints[2] < 1) {throw new Exception("Hours must be between 00-24"); } //result = false; }
-                else if (ints[3] > MINUTES || ints[3] < 1) { throw new Exception("Hours must be between 00-60"); } //result = false; }
-            }
-        }
-        return  result;
-    }
-
-    public boolean setDate(String dateFormat) throws Exception {
-        boolean result = false;
-        try {
-            if (dateChecker(dateFormat)) {
-                this.date = DF.parse(dateFormat);
-                result = true;
-            } else {
-                System.out.println("The format was not correct. Please enter a date in the format of " + DATE_FORMAT);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("The format was not correct. Please enter a date in the format of " + DATE_FORMAT);
-        }
-        catch (Exception e) {
-            throw new Exception("An unknown error occurred while reading order date");
-        }
-        return result;
+    public ArrayList<Store> getWhereFrom() {
+        return new ArrayList<>(whereFrom.values());
     }
 
     public int getDifferentProductCount() {
         return productIdToAmount.size();
     }
 
-    public static String getDATE_FORMAT() {
-        return DATE_FORMAT;
-    }
-
+    /*
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -181,6 +153,7 @@ public class Order {
 
         return sb.toString();
     }
+ */
 
     public void addProduct(int productId, double amountToAdd) {
         if (productIdToAmount.containsKey(productId)){
@@ -197,5 +170,13 @@ public class Order {
                 productIdToAmount.put(productId, 1.0);
             }
         }
+    }
+
+    public boolean getIsDynamic() {
+        return isDynamic;
+    }
+
+    public void setCustomerId(int orderingCustomerId) {
+        this.orderingCustomerId = orderingCustomerId;
     }
 }

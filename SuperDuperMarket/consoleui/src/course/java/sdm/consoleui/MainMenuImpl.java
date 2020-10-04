@@ -289,7 +289,7 @@ public class MainMenuImpl implements Menu {
             sb.append("Store products: ");
             sb.append(getItemsString((Map<Integer, Object>)vendor.get("Products")));//TODO AAA
             sb.append("Orders made from this store: ");
-            List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByVendorId((int)vendor.get("Id"));
+            List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByStoreId((int)vendor.get("Id"));
             sb.append(OrderManagerSingleton.getInstance().getOrderInfoString(orders));
             sb.append("Total products that were sold from this store: ");
             sb.append(vendor.get("Total Sold Products"));

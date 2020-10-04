@@ -16,6 +16,10 @@ public class CustomerManagerSingleton {
         this.idToCustomer = idToCustomer;
     }
 
+    public Customer getCustomer(int id) {
+        return idToCustomer.get(id);
+    }
+
     private CustomerManagerSingleton() {
         idToCustomer = new TreeMap<>();
     }

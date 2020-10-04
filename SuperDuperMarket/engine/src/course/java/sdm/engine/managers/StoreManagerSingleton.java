@@ -89,7 +89,7 @@ import java.util.*;
                 vendorInfo.put("Products", getVendorProductsInfo(store));
                 vendorInfo.put("PPK", store.getPPK());
 
-                List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByVendorId(store.getId());
+                List<Order> orders = OrderManagerSingleton.getInstance().getOrdersByStoreId(store.getId());
                 vendorInfo.put("Past Orders",orders);
                 double totalProducts = 0;
                 int summedDeliveryPrice = 0;

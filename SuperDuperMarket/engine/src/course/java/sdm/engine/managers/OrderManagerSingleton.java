@@ -1,7 +1,7 @@
 package course.java.sdm.engine.managers;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import course.java.sdm.engine.entities.Order;
+import course.java.sdm.engine.entities.Store;
 import course.java.sdm.engine.utils.MyUtils;
 
 import java.util.ArrayList;
@@ -29,19 +29,23 @@ public class OrderManagerSingleton {
     }
 
 
-    public List<Order> getOrdersByVendorId(int vendorId) {
+    public List<Order> getOrdersByStoreId(int storeId) {
         List<Order> result = new ArrayList<>();
         for (Order order : idToOrder.values()) {
-            if (order.getWhereFrom().getId() == vendorId) {
-                result.add(order);
+            List<Store> orderStores = order.getWhereFrom();
+            for (Store store : orderStores) {
+                if (store.getId() == storeId) {
+                    result.add(order);
+                }
             }
+
         }
         return result;
     }
 
     public double howMuchProductWasSold(int productId, int vendorId) {
         double result = 0;
-        List<Order> orders = getOrdersByVendorId(vendorId);
+        List<Order> orders = getOrdersByStoreId(vendorId);
         for (Order order : orders) {
             if (order.isContainProduct(productId)) {
                 result += order.getProductAmount(productId);
@@ -63,7 +67,7 @@ public class OrderManagerSingleton {
     public void createDynamicOrder(Map<Integer, Double> productIdToAmount) {
 
     }
-
+/*
     public String getAllOrdersStr() {
         StringBuilder sb = new StringBuilder();
         for(Order order : idToOrder.values()) {
@@ -100,6 +104,7 @@ public class OrderManagerSingleton {
         }
         return sb.toString();
     }
+ */
 
     public void addOrder(Order order) {
         idToOrder.put(order.getId(), order);
@@ -121,7 +126,7 @@ public class OrderManagerSingleton {
         sb.append("\n{");
         for (Order order : orders) {
             sb.append("Date of order: ");
-            sb.append(order.getDate());
+            sb.append(order.getLocalDate());
             sb.append(MyUtils.STRING_SEPARATOR);
             sb.append("Total count of products: ");
             sb.append(order.getTotalItemCount());

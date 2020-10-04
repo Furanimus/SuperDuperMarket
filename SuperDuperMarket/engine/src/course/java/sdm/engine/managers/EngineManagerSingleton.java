@@ -44,8 +44,18 @@ public class EngineManagerSingleton {
         filePath = path;
     }
 
-    public ArrayList<SmartProduct> getProductsList() {
+    public ArrayList<SmartProduct> getSmartProductsList() {
         return new ArrayList<>(idToProduct.values());
+    }
+
+    public ArrayList<Product> getProductsList() {
+        ArrayList<Product> result = new ArrayList<>();
+        for(SmartProduct smartProduct : getSmartProductsList()) {
+            result.add(new Product(smartProduct.getId(),
+                    smartProduct.getName(),
+                    smartProduct.getPurchaseCategory()));
+        }
+        return result;
     }
 
     private EngineManagerSingleton() {

@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane prefHeight="626.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="course.java.sdm.javafxui.SDMMainWindowController">
+<ScrollPane prefHeight="626.0" prefWidth="867.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="course.java.sdm.javafxui.windows.SDMMainWindowController">
    <content>
       <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="459.0" minWidth="622.0" prefHeight="611.0" prefWidth="855.0">
          <center>
@@ -78,8 +78,8 @@
                                   <TableColumn fx:id="customerNameCol" prefWidth="99.0" text="Customer Name" />
                                     <TableColumn fx:id="customerLocationCol" prefWidth="59.0" text="Location" />
                                     <TableColumn fx:id="customerOrdersMadeCol" prefWidth="147.0" text="Number Of orders made" />
-                                    <TableColumn fx:id="customerAvgOrderNoDelivery" prefWidth="221.0" text="Avarege order price without delivery" />
-                                    <TableColumn fx:id="customerAvgDeliveryPrice" prefWidth="143.0" text="Avarege delivery price" />
+                                    <TableColumn fx:id="customerAvgOrderNoDeliveryCol" prefWidth="221.0" text="Avarege order price without delivery" />
+                                    <TableColumn fx:id="customerAvgDeliveryPriceCol" prefWidth="143.0" text="Avarege delivery price" />
                                 </columns>
                               </TableView>
                            </children>

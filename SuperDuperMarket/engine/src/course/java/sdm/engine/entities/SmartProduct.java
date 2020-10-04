@@ -7,8 +7,21 @@ public class SmartProduct extends Product {
     private final StoreManagerSingleton storeManager;
     private final OrderManagerSingleton orderManager;
 
-    //protected double avgPrice;
+    protected double avgPrice;
     protected int numberOfStoresSoldIn;
+
+    public double getAvgPrice() {
+        return avgPrice;
+    }
+
+    public int getNumberOfStoresSoldIn() {
+        return numberOfStoresSoldIn;
+    }
+
+    public double getTimesSold() {
+        return timesSold;
+    }
+
     protected double timesSold;
 
     public SmartProduct(int id, String name, String purchaseCategory) {
